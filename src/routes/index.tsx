@@ -1,0 +1,44 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { LenisProvider } from "@/components/synkron/LenisProvider";
+import { Navbar } from "@/components/synkron/Navbar";
+import { Hero } from "@/components/synkron/Hero";
+import { Marquee } from "@/components/synkron/Marquee";
+import { HowItWorks } from "@/components/synkron/HowItWorks";
+import { AgentPipeline } from "@/components/synkron/AgentPipeline";
+import { LiveMockup } from "@/components/synkron/LiveMockup";
+import { DashboardPreview } from "@/components/synkron/DashboardPreview";
+import { BentoFeatures } from "@/components/synkron/BentoFeatures";
+import { FinalCTA } from "@/components/synkron/FinalCTA";
+import { Footer } from "@/components/synkron/Footer";
+
+export const Route = createFileRoute("/")({ component: Index });
+
+function Index() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <LenisProvider>
+      <div className="bg-[#04040A] text-[#F1F5F9] min-h-screen">
+        <Navbar scrolled={scrolled} />
+        <main>
+          <Hero />
+          <Marquee />
+          <HowItWorks />
+          <AgentPipeline />
+          <LiveMockup />
+          <DashboardPreview />
+          <BentoFeatures />
+          <FinalCTA />
+        </main>
+        <Footer />
+      </div>
+    </LenisProvider>
+  );
+}
