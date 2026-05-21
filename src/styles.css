@@ -138,6 +138,22 @@
   background-size: 18px 18px;
 }
 
+/* Floating orbs for FinalCTA */
+@keyframes float-orb1 {
+  0%, 100% { transform: translate(-65%, -50%) scale(1); }
+  50% { transform: translate(-65%, -52%) scale(1.08); }
+}
+@keyframes float-orb2 {
+  0%, 100% { transform: translate(-35%, -50%) scale(1); }
+  50% { transform: translate(-35%, -47%) scale(1.06); }
+}
+
+/* Section dividers */
+.section-rule {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.07), transparent);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

@@ -24,7 +24,8 @@ function useCountUp(end: number, start: boolean, dur = 1.2) {
   const [v, setV] = useState(0);
   useEffect(() => {
     if (!start) return;
-    let raf = 0; const t0 = performance.now();
+    let raf = 0;
+    const t0 = performance.now();
     const tick = (t: number) => {
       const p = Math.min((t - t0) / (dur * 1000), 1);
       setV(Math.round(p * end));
@@ -41,97 +42,173 @@ function Stats() {
   const inView = useInView(ref, { once: true, margin: "-50px" });
   const t = useCountUp(18, inView);
   const docs = useCountUp(2, inView);
-  const mrs = useCountUp(1, inView);
   return (
     <div ref={ref} className="mt-10 flex flex-wrap justify-center gap-3">
-      {[`⚡ ${t}s average pipeline time`, `📄 ${docs} docs updated`, `✓ ${mrs} merge request opened`].map((c) => (
-        <span key={c} className="rounded-full bg-white/5 border border-white/[0.08] px-5 py-2 text-slate-300 text-sm">{c}</span>
+      {[
+        `⚡ ${t}s average pipeline`,
+        `📄 ${docs} docs updated`,
+        `✓ MR opened`,
+      ].map((c) => (
+        <motion.span
+          key={c}
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="rounded-full bg-white/5 border border-white/[0.08] px-5 py-2 text-slate-300 text-sm"
+        >
+          {c}
+        </motion.span>
       ))}
     </div>
   );
 }
 
 export function LiveMockup() {
-  return (
-    <section className="py-[140px] px-6">
-      <div className="max-w-7xl mx-auto">
-        <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">Real output</p>
-        <h2 className="font-display font-bold text-white mt-3" style={{ fontSize: "clamp(34px, 4.5vw, 48px)", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
-          Watch a real merge request get born.
-        </h2>
+  const sectionRef = useRef(null);
+  const inView = useInView(sectionRef, { once: true, margin: "-100px" });
 
+  return (
+    <section className="py-[140px] px-6" ref={sectionRef}>
+      <div className="max-w-7xl mx-auto">
+        {/* Heading */}
         <motion.div
-          initial={{ opacity: 0, rotateX: 12, y: 40 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">
+            Real output
+          </p>
+          <h2
+            className="font-display font-bold text-white mt-3"
+            style={{
+              fontSize: "clamp(34px, 4.5vw, 52px)",
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Watch a merge request{" "}
+            <span className="text-gradient">get born.</span>
+          </h2>
+        </motion.div>
+
+        {/* Mockup card */}
+        <motion.div
+          initial={{ opacity: 0, rotateX: 14, y: 40 }}
           whileInView={{ opacity: 1, rotateX: 0, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          style={{ perspective: 1200, transformOrigin: "center top" }}
+          style={{ perspective: 1400, transformOrigin: "center top" }}
           className="max-w-5xl mx-auto mt-14"
         >
-          <div className="rounded-2xl border border-white/10 bg-[#0A0A14] shadow-[0_40px_120px_-20px_rgba(45,212,191,0.15)] overflow-hidden">
+          <div className="rounded-2xl border border-white/[0.09] bg-[#0A0A14] shadow-[0_40px_120px_-20px_rgba(45,212,191,0.12)] overflow-hidden">
             <div className="grid md:grid-cols-2 relative">
-              {/* Left: code diff */}
-              <div className="border-b md:border-b-0 md:border-r border-white/[0.08] bg-[#06060F]">
-                <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06]">
-                  <span className="w-3 h-3 rounded-full bg-red-400/70" />
-                  <span className="w-3 h-3 rounded-full bg-yellow-400/70" />
-                  <span className="w-3 h-3 rounded-full bg-green-400/70" />
-                  <span className="ml-3 font-mono text-xs text-slate-500">auth/middleware.py</span>
+              {/* Left: diff editor */}
+              <div className="border-b md:border-b-0 md:border-r border-white/[0.07] bg-[#06060F]">
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06] bg-[#06060F]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
+                  <span className="ml-3 font-mono text-xs text-slate-500">
+                    auth/middleware.py
+                  </span>
                 </div>
                 <pre className="font-mono text-xs leading-6 p-4 overflow-x-auto">
                   {diff.map((l, i) => (
-                    <div
+                    <motion.div
                       key={i}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={inView ? { opacity: 1, x: 0 } : {}}
+                      transition={{
+                        duration: 0.3,
+                        delay: 0.3 + i * 0.06,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
                       className={
                         l.type === "del"
-                          ? "bg-red-400/10 text-red-300/90"
+                          ? "bg-red-400/10 text-red-300/90 border-l-2 border-red-500/50 pl-2"
                           : l.type === "add"
-                          ? "bg-teal-400/10 text-teal-200/90"
-                          : "text-slate-500"
+                          ? "bg-teal-400/10 text-teal-200/90 border-l-2 border-teal-500/50 pl-2"
+                          : "text-slate-500 pl-2 border-l-2 border-transparent"
                       }
                     >
-                      <span className="select-none mr-3 text-slate-600">{l.type === "del" ? "-" : l.type === "add" ? "+" : " "}</span>
-                      {l.text || "\u00A0"}
-                    </div>
+                      <span className="select-none mr-3 text-slate-600 w-3 inline-block">
+                        {l.type === "del" ? "−" : l.type === "add" ? "+" : " "}
+                      </span>
+                      {l.text || " "}
+                    </motion.div>
                   ))}
                 </pre>
               </div>
 
-              {/* Arrow */}
-              <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex-col items-center gap-2">
-                <div className="rounded-full bg-[#04040A] border border-teal-400/40 p-3 shadow-[0_0_30px_rgba(45,212,191,0.4)]">
+              {/* Center arrow */}
+              <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex-col items-center gap-1.5">
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={inView ? { scale: 1, opacity: 1 } : {}}
+                  transition={{ delay: 1.2, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  className="rounded-full bg-[#04040A] border border-teal-400/40 p-3 shadow-[0_0_24px_rgba(45,212,191,0.35)]"
+                >
                   <ArrowRight className="w-4 h-4 text-teal-400" />
-                </div>
-                <span className="font-mono text-[10px] text-teal-400/80 uppercase tracking-widest">Synkron</span>
+                </motion.div>
+                <span className="font-mono text-[10px] text-teal-400/80 uppercase tracking-widest">
+                  synkron
+                </span>
               </div>
 
-              {/* Right: MR */}
+              {/* Right: MR preview */}
               <div className="bg-[#0D0D1C]">
-                <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
-                  <span className="rounded bg-teal-400/15 text-teal-300 text-[10px] font-mono px-2 py-0.5">Merge Request !42</span>
-                  <span className="text-white text-sm font-medium">Documentation update</span>
+                <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/[0.06]">
+                  <span className="rounded bg-green-500/20 text-green-400 text-[10px] font-mono px-2 py-0.5 border border-green-500/30">
+                    !42
+                  </span>
+                  <span className="text-white text-sm font-medium">
+                    Documentation update
+                  </span>
                 </div>
+
                 <div className="px-5 py-4 flex items-center gap-3 border-b border-white/[0.06]">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-indigo-400 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-indigo-400 flex items-center justify-center flex-shrink-0">
                     <Bot className="w-4 h-4 text-[#04040A]" />
                   </div>
                   <div>
-                    <div className="text-white text-sm">synkron-bot</div>
+                    <div className="text-white text-sm font-medium">synkron-bot</div>
                     <div className="text-slate-500 text-xs">opened a moment ago</div>
                   </div>
                 </div>
-                <div className="px-5 py-4 text-sm">
-                  <div className="text-slate-300 font-medium mb-2">docs/auth.md</div>
-                  <div className="text-slate-400 leading-relaxed space-y-2 font-mono text-xs">
-                    <p><span className="text-teal-400">##</span> Token lifetimes</p>
-                    <p>Access tokens now expire after <span className="text-teal-300">15 minutes</span> instead of 24 hours.</p>
-                    <p>A new <span className="text-teal-300">refresh token</span> is issued at login and valid for 7 days.</p>
-                    <p className="text-slate-500">— Synkron updated 2 sections referencing JWT expiry.</p>
+
+                <div className="px-5 py-4">
+                  <div className="rounded-xl border border-white/[0.07] bg-[#0A0A18] p-4">
+                    <p className="text-slate-400 text-xs font-mono leading-relaxed space-y-1.5">
+                      <span className="block">
+                        <span className="text-teal-400">##</span> Token lifetimes
+                      </span>
+                      <span className="block">
+                        Access tokens now expire after{" "}
+                        <span className="text-teal-300">15 minutes</span> instead
+                        of 24 hours.
+                      </span>
+                      <span className="block">
+                        A new{" "}
+                        <span className="text-teal-300">refresh token</span> is
+                        issued at login, valid for 7 days.
+                      </span>
+                      <span className="block text-slate-600 mt-2">
+                        — Synkron updated 2 sections referencing JWT expiry.
+                      </span>
+                    </p>
                   </div>
                 </div>
-                <div className="px-5 py-4 flex gap-2 border-t border-white/[0.06]">
-                  <button className="rounded-md bg-teal-400 text-[#04040A] text-sm font-semibold px-4 py-1.5">Approve</button>
-                  <button className="rounded-md border border-white/10 text-slate-300 text-sm px-4 py-1.5 hover:bg-white/5">Request changes</button>
+
+                <div className="px-5 pb-5 flex gap-2">
+                  <button className="rounded-lg bg-teal-400/15 border border-teal-400/30 text-teal-300 text-sm font-medium px-4 py-1.5 hover:bg-teal-400/25 transition-colors">
+                    Approve
+                  </button>
+                  <button className="rounded-lg border border-white/10 text-slate-400 text-sm px-4 py-1.5 hover:bg-white/5 transition-colors">
+                    Request changes
+                  </button>
                 </div>
               </div>
             </div>
