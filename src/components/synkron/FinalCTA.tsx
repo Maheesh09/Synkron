@@ -30,7 +30,7 @@ export function FinalCTA() {
     <section
       id="waitlist"
       ref={ref}
-      className="py-[160px] px-6 relative overflow-hidden"
+      className="py-20 md:py-[160px] px-6 relative overflow-hidden"
     >
       {/* Animated orbs */}
       <div
@@ -60,8 +60,8 @@ export function FinalCTA() {
           <h2
             className="font-display font-extrabold text-white"
             style={{
-              fontSize: "clamp(48px, 7vw, 80px)",
-              lineHeight: 1.02,
+              fontSize: "clamp(34px, 8vw, 80px)",
+              lineHeight: 1.05,
               letterSpacing: "-0.03em",
             }}
           >
@@ -69,7 +69,7 @@ export function FinalCTA() {
             <br />
             <span className="text-gradient">in your docs.</span>
           </h2>
-          <p className="text-slate-400 mt-5 text-lg leading-relaxed">
+          <p className="text-slate-400 mt-5 text-base sm:text-lg leading-relaxed">
             Synkron is in early access. Join the waitlist.
           </p>
         </motion.div>
@@ -91,7 +91,7 @@ export function FinalCTA() {
                 key="form"
                 initial={{ opacity: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="flex flex-col sm:flex-row items-center justify-center gap-3"
+                className="flex flex-col sm:flex-row items-center justify-center gap-3 px-4 sm:px-0"
               >
                 <motion.input
                   type="email"
@@ -100,7 +100,7 @@ export function FinalCTA() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@company.com"
                   whileFocus={{ borderColor: "rgba(45,212,191,0.4)" }}
-                  className="rounded-full bg-white/5 border border-white/10 px-6 py-3 text-white placeholder:text-slate-500 focus:outline-none w-full sm:w-[300px] transition-colors"
+                  className="rounded-full bg-white/5 border border-white/10 px-6 py-3 text-white placeholder:text-slate-500 focus:outline-none w-full sm:w-[300px] transition-colors text-center sm:text-left"
                 />
                 <motion.button
                   type="submit"
@@ -110,7 +110,7 @@ export function FinalCTA() {
                     boxShadow: "0 0 40px rgba(45,212,191,0.45)",
                   }}
                   whileTap={{ scale: 0.98 }}
-                  className="rounded-full bg-teal-400 hover:bg-teal-300 text-[#04040A] font-semibold px-8 py-3 transition-colors whitespace-nowrap"
+                  className="w-full sm:w-auto rounded-full bg-teal-400 hover:bg-teal-300 text-[#04040A] font-semibold px-8 py-3 transition-colors whitespace-nowrap"
                 >
                   Join waitlist →
                 </motion.button>

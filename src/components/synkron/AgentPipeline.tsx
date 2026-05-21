@@ -101,7 +101,8 @@ function AgentCard({ a, i }: { a: (typeof agents)[number]; i: number }) {
 export function AgentPipeline() {
   return (
     <section
-      className="py-[140px] px-6 relative"
+      id="agents"
+      className="py-16 md:py-[140px] px-6 relative"
       style={{
         background:
           "radial-gradient(ellipse 900px 600px at 50% 50%, rgba(45,212,191,0.04) 0%, transparent 100%)",
@@ -133,9 +134,9 @@ export function AgentPipeline() {
         </motion.div>
 
         {/* Pipeline connector */}
-        <div className="mt-10 flex items-center gap-3 sm:gap-5">
+        <div className="mt-10 flex flex-wrap items-center gap-x-2 sm:gap-x-5 gap-y-4">
           {labels.map((l, i) => (
-            <div key={l} className="flex items-center gap-3 sm:gap-5">
+            <div key={l} className="flex items-center gap-2 sm:gap-5">
               <div className="flex flex-col items-center">
                 <div className="relative">
                   <div className="w-3 h-3 rounded-full bg-teal-400 shadow-[0_0_8px_rgba(45,212,191,0.6)]" />
@@ -144,12 +145,12 @@ export function AgentPipeline() {
                     style={{ animationDelay: `${i * 0.4}s` }}
                   />
                 </div>
-                <span className="font-mono text-xs text-slate-500 mt-2.5">
+                <span className="font-mono text-[10px] sm:text-xs text-slate-500 mt-2.5">
                   {l}
                 </span>
               </div>
               {i < labels.length - 1 && (
-                <div className="relative w-10 sm:w-16 h-px bg-teal-400/20 mb-5">
+                <div className="relative w-6 sm:w-16 h-px bg-teal-400/20 mb-5">
                   <div className="absolute inset-0 bg-gradient-to-r from-teal-400/40 to-transparent" />
                 </div>
               )}

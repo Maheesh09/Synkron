@@ -77,7 +77,7 @@ function PipelineWidget() {
           <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
-          <span className="ml-2 font-mono text-xs text-slate-500">
+          <span className="ml-2 font-mono text-[10px] sm:text-xs text-slate-500 truncate max-w-[150px] sm:max-w-none">
             synkron · pipeline run #1,847
           </span>
           <span className="ml-auto flex items-center gap-1.5 font-mono text-[10px] text-emerald-400">
@@ -94,7 +94,7 @@ function PipelineWidget() {
         </div>
 
         {/* Pipeline steps */}
-        <div className="px-6 py-5 grid grid-cols-4 gap-2">
+        <div className="px-4 py-5 sm:px-6 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-2">
           {pipelineSteps.map(({ icon: Icon, label, color }, i) => (
             <motion.div
               key={label}
@@ -129,7 +129,7 @@ function PipelineWidget() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.4, duration: 0.6 }}
-            className="font-mono text-[11px] text-slate-500"
+            className="font-mono text-[9px] sm:text-[11px] text-slate-500 leading-relaxed break-words text-center sm:text-left"
           >
             <span className="text-teal-400">✓</span> docs/auth.md · 2 sections
             rewritten ·{" "}
@@ -167,22 +167,23 @@ export function Hero() {
         {/* Badge */}
         <motion.div
           variants={item}
-          className="inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-4 py-1.5"
+          className="inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-4 py-1.5 max-w-full"
         >
-          <span className="relative flex h-2 w-2">
+          <span className="relative flex h-2 w-2 flex-shrink-0">
             <span className="absolute inset-0 rounded-full bg-emerald-400 pulse-dot" />
             <span className="relative rounded-full bg-emerald-400 h-2 w-2" />
           </span>
-          <span className="text-teal-300 text-xs font-mono uppercase tracking-widest">
-            AI-powered · GitLab Native · Zero workflow change
+          <span className="text-teal-300 text-[10px] sm:text-xs font-mono uppercase tracking-widest text-center">
+            <span className="inline sm:hidden">AI-powered · GitLab Native</span>
+            <span className="hidden sm:inline">AI-powered · GitLab Native · Zero workflow change</span>
           </span>
         </motion.div>
 
         {/* Headline */}
         <motion.h1
           variants={item}
-          className="font-display font-extrabold tracking-tight leading-none mt-7 text-white"
-          style={{ fontSize: "clamp(48px, 7vw, 88px)" }}
+          className="font-display font-extrabold tracking-tight leading-tight sm:leading-none mt-7 text-white"
+          style={{ fontSize: "clamp(34px, 8vw, 88px)" }}
         >
           Documentation
           <br />
@@ -192,7 +193,7 @@ export function Hero() {
         {/* Sub */}
         <motion.p
           variants={item}
-          className="mt-6 max-w-2xl text-slate-400 text-lg leading-relaxed"
+          className="mt-6 max-w-2xl text-slate-400 text-base sm:text-lg leading-relaxed px-4 sm:px-0"
         >
           Synkron watches every commit, understands what changed, and opens a
           merge request — so your docs never lie again.
@@ -201,7 +202,7 @@ export function Hero() {
         {/* CTAs */}
         <motion.div
           variants={item}
-          className="mt-9 flex flex-col sm:flex-row items-center gap-4"
+          className="mt-9 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto px-4 sm:px-0 justify-center"
         >
           <motion.a
             href="#waitlist"
@@ -211,7 +212,7 @@ export function Hero() {
               boxShadow: "0 0 40px rgba(45,212,191,0.45)",
             }}
             whileTap={{ scale: 0.98 }}
-            className="rounded-full bg-teal-400 text-[#04040A] font-semibold px-8 py-3.5 transition-colors hover:bg-teal-300"
+            className="w-full sm:w-auto text-center rounded-full bg-teal-400 text-[#04040A] font-semibold px-8 py-3.5 transition-colors hover:bg-teal-300"
           >
             Start syncing free →
           </motion.a>
@@ -219,7 +220,7 @@ export function Hero() {
             href="#how"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="rounded-full border border-white/10 hover:border-white/20 text-slate-300 px-8 py-3.5 bg-white/5 backdrop-blur-sm transition-colors"
+            className="w-full sm:w-auto text-center rounded-full border border-white/10 hover:border-white/20 text-slate-300 px-8 py-3.5 bg-white/5 backdrop-blur-sm transition-colors"
           >
             See how it works ↓
           </motion.a>
@@ -228,12 +229,12 @@ export function Hero() {
         {/* Integrates with */}
         <motion.div
           variants={item}
-          className="mt-12 flex flex-col items-center gap-4"
+          className="mt-12 flex flex-col items-center gap-4 w-full"
         >
           <p className="text-slate-600 font-mono text-xs uppercase tracking-widest">
             Integrates with
           </p>
-          <div className="flex items-center gap-7">
+          <div className="flex flex-wrap justify-center items-center gap-5 sm:gap-7 px-4">
             {logos.map((l) => (
               <span
                 key={l.name}

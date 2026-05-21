@@ -29,7 +29,7 @@ function Card({
 
 export function BentoFeatures() {
   return (
-    <section className="py-[140px] px-6 relative">
+    <section className="py-16 md:py-[140px] px-6 relative">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{

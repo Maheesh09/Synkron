@@ -89,7 +89,7 @@ function StepCard({ s, i }: { s: (typeof steps)[number]; i: number }) {
 
 export function HowItWorks() {
   return (
-    <section id="how" className="py-[140px] px-6 relative">
+    <section id="how" className="py-16 md:py-[140px] px-6 relative">
       {/* Subtle section bg glow */}
       <div
         className="absolute inset-0 pointer-events-none"

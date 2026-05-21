@@ -1,39 +1,113 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X } from "lucide-react";
 import { SyncIcon } from "./SyncIcon";
 
-const links = ["How it works", "Agents", "Dashboard", "Docs"];
+const links = [
+  { label: "How it works", href: "#how" },
+  { label: "Agents", href: "#agents" },
+  { label: "Dashboard", href: "#dashboard" },
+  { label: "Docs", href: "#" },
+];
 
 export function Navbar({ scrolled }: { scrolled: boolean }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <header
       className="fixed top-0 inset-x-0 z-50 transition-all duration-300"
       style={{
-        backgroundColor: scrolled ? "rgba(4,4,10,0.8)" : "transparent",
-        backdropFilter: scrolled ? "blur(12px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
+        backgroundColor: scrolled || isOpen ? "rgba(4,4,10,0.85)" : "transparent",
+        backdropFilter: scrolled || isOpen ? "blur(16px)" : "none",
+        borderBottom: scrolled || isOpen ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
       }}
     >
       <nav className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2">
+        <a href="#" className="flex items-center gap-2 z-50" onClick={() => setIsOpen(false)}>
           <SyncIcon className="w-5 h-5 text-teal-400 spin-slow" />
           <span className="font-display font-semibold text-lg tracking-tight text-white">Synkron</span>
         </a>
+
+        {/* Desktop Links */}
         <ul className="hidden md:flex items-center gap-8 text-sm">
           {links.map((l) => (
-            <li key={l}>
-              <a href="#" className="nav-link text-slate-400 hover:text-teal-400 transition-colors">{l}</a>
+            <li key={l.label}>
+              <a href={l.href} className="nav-link text-slate-400 hover:text-teal-400 transition-colors">
+                {l.label}
+              </a>
             </li>
           ))}
         </ul>
-        <motion.a
-          href="#waitlist"
-          whileHover={{ scale: 1.03, boxShadow: "0 0 20px rgba(45,212,191,0.3)" }}
-          whileTap={{ scale: 0.97 }}
-          className="rounded-full border border-teal-400/30 bg-teal-400/10 text-teal-300 text-sm font-medium px-5 py-2 hover:bg-teal-400/20 transition-colors"
+
+        {/* Desktop CTA */}
+        <div className="hidden md:block">
+          <motion.a
+            href="#waitlist"
+            whileHover={{ scale: 1.03, boxShadow: "0 0 20px rgba(45,212,191,0.3)" }}
+            whileTap={{ scale: 0.97 }}
+            className="rounded-full border border-teal-400/30 bg-teal-400/10 text-teal-300 text-sm font-medium px-5 py-2 hover:bg-teal-400/20 transition-colors"
+          >
+            Get early access →
+          </motion.a>
+        </div>
+
+        {/* Mobile Toggle Button */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex md:hidden items-center justify-center p-2 rounded-full border border-white/10 bg-white/5 text-slate-300 hover:text-teal-400 hover:border-teal-400/30 transition-all z-50 cursor-pointer"
+          aria-label="Toggle navigation menu"
         >
-          Get early access →
-        </motion.a>
+          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="md:hidden border-t border-white/[0.06] bg-[#04040A]/95 overflow-hidden backdrop-blur-xl"
+          >
+            <div className="flex flex-col gap-6 px-8 py-8">
+              <ul className="flex flex-col gap-5">
+                {links.map((l, i) => (
+                  <motion.li
+                    key={l.label}
+                    initial={{ opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05, duration: 0.3 }}
+                  >
+                    <a
+                      href={l.href}
+                      onClick={() => setIsOpen(false)}
+                      className="block text-slate-300 hover:text-teal-400 font-medium text-lg transition-colors py-1"
+                    >
+                      {l.label}
+                    </a>
+                  </motion.li>
+                ))}
+              </ul>
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: links.length * 0.05 + 0.05, duration: 0.3 }}
+                className="pt-4 border-t border-white/[0.04]"
+              >
+                <a
+                  href="#waitlist"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-center rounded-full bg-teal-400 text-[#04040A] font-semibold text-sm py-3.5 hover:bg-teal-300 transition-colors shadow-[0_0_24px_rgba(45,212,191,0.2)]"
+                >
+                  Get early access →
+                </a>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

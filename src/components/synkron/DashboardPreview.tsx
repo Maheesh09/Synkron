@@ -70,7 +70,7 @@ export function DashboardPreview() {
   const rate = useCountUp(94, statsInView);
 
   return (
-    <section className="py-[120px] px-6 bg-[#04040A] relative">
+    <section id="dashboard" className="py-16 md:py-[120px] px-6 bg-[#04040A] relative">
       {/* Edge separator */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
 

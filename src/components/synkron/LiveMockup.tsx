@@ -69,7 +69,7 @@ export function LiveMockup() {
   const inView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   return (
-    <section className="py-[140px] px-6" ref={sectionRef}>
+    <section className="py-16 md:py-[140px] px-6" ref={sectionRef}>
       <div className="max-w-7xl mx-auto">
         {/* Heading */}
         <motion.div
@@ -115,7 +115,7 @@ export function LiveMockup() {
                     auth/middleware.py
                   </span>
                 </div>
-                <pre className="font-mono text-xs leading-6 p-4 overflow-x-auto">
+                <pre className="font-mono text-[10px] sm:text-xs leading-5 sm:leading-6 p-3 sm:p-4 overflow-x-auto">
                   {diff.map((l, i) => (
                     <motion.div
                       key={i}
@@ -202,11 +202,11 @@ export function LiveMockup() {
                   </div>
                 </div>
 
-                <div className="px-5 pb-5 flex gap-2">
-                  <button className="rounded-lg bg-teal-400/15 border border-teal-400/30 text-teal-300 text-sm font-medium px-4 py-1.5 hover:bg-teal-400/25 transition-colors">
+                <div className="px-5 pb-5 flex flex-wrap gap-2">
+                  <button className="flex-1 sm:flex-none rounded-lg bg-teal-400/15 border border-teal-400/30 text-teal-300 text-xs sm:text-sm font-medium px-4 py-2 sm:py-1.5 hover:bg-teal-400/25 transition-colors whitespace-nowrap">
                     Approve
                   </button>
-                  <button className="rounded-lg border border-white/10 text-slate-400 text-sm px-4 py-1.5 hover:bg-white/5 transition-colors">
+                  <button className="flex-1 sm:flex-none rounded-lg border border-white/10 text-slate-400 text-xs sm:text-sm px-4 py-2 sm:py-1.5 hover:bg-white/5 transition-colors whitespace-nowrap">
                     Request changes
                   </button>
                 </div>

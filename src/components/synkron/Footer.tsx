@@ -31,11 +31,11 @@ export function Footer() {
           </ul>
         </div>
 
-        <div className="mt-10 pt-8 border-t border-white/[0.05] flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+        <div className="mt-10 pt-8 border-t border-white/[0.05] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <p className="text-slate-600 text-sm">
             © 2026 Synkron. Built for developers who ship.
           </p>
-          <div className="flex items-center gap-3 text-slate-600 text-xs font-mono">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-slate-600 text-xs font-mono">
             <span>Powered by</span>
             <span className="text-slate-500">Gemini</span>
             <span className="text-white/10">·</span>
