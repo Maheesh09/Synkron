@@ -26,21 +26,24 @@ export function Navbar({ scrolled }: { scrolled: boolean }) {
       }}
     >
       <nav className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2 z-50" onClick={() => setIsOpen(false)}>
-          <SyncIcon className="w-5 h-5 text-teal-400 spin-slow" />
-          <span className="font-display font-semibold text-lg tracking-tight text-white">Synkron</span>
-        </a>
+        {/* Left: Logo */}
+        <div className="flex flex-1 items-center justify-start">
+          <a href="#" className="flex items-center gap-2 z-50" onClick={() => setIsOpen(false)}>
+            <SyncIcon className="w-5 h-5 text-teal-400 spin-slow" />
+            <span className="font-display font-semibold text-lg tracking-tight text-white">Synkron</span>
+          </a>
+        </div>
 
         {/* Desktop Links */}
-        <ul className="hidden md:flex items-center gap-8 text-sm">
+        <ul className="hidden md:flex flex-none items-center gap-8 text-sm">
           {links.map((l) => (
             <li key={l.label}>
               {l.href.startsWith("/") ? (
-                <Link to={l.href} className="nav-link ...">
+                <Link to={l.href} className="text-slate-400 hover:text-teal-400 transition-colors">
                   {l.label}
                 </Link>
               ) : (
-                <a href={l.href} className="nav-link ...">
+                <a href={l.href} className="text-slate-400 hover:text-teal-400 transition-colors">
                   {l.label}
                 </a>
               )}
@@ -48,34 +51,37 @@ export function Navbar({ scrolled }: { scrolled: boolean }) {
           ))}
         </ul>
 
-        {/* Desktop CTAs */}
-        <div className="hidden md:flex items-center gap-3">
-          {!isOnApp && (
-            <Link
-              to="/app"
-              className="rounded-lg bg-teal-400 text-[#03242a] font-medium text-sm px-4 py-2 hover:brightness-110 transition whitespace-nowrap"
+        {/* Right: CTAs & Mobile Menu */}
+        <div className="flex flex-1 items-center justify-end gap-3">
+          {/* Desktop CTAs */}
+          <div className="hidden md:flex items-center gap-3">
+            {!isOnApp && (
+              <Link
+                to="/app"
+                className="rounded-lg bg-teal-400 text-[#03242a] font-medium text-sm px-4 py-2 hover:brightness-110 transition whitespace-nowrap"
+              >
+                Open dashboard →
+              </Link>
+            )}
+            <motion.a
+              href="/app"
+              whileHover={{ scale: 1.03, boxShadow: "0 0 20px rgba(45,212,191,0.3)" }}
+              whileTap={{ scale: 0.97 }}
+              className="rounded-full border border-teal-400/30 bg-teal-400/10 text-teal-300 text-sm font-medium px-5 py-2 hover:bg-teal-400/20 transition-colors"
             >
-              Open dashboard →
-            </Link>
-          )}
-          <motion.a
-            href="/app"
-            whileHover={{ scale: 1.03, boxShadow: "0 0 20px rgba(45,212,191,0.3)" }}
-            whileTap={{ scale: 0.97 }}
-            className="rounded-full border border-teal-400/30 bg-teal-400/10 text-teal-300 text-sm font-medium px-5 py-2 hover:bg-teal-400/20 transition-colors"
-          >
-            Connect GitLab →
-          </motion.a>
-        </div>
+              Connect GitLab →
+            </motion.a>
+          </div>
 
-        {/* Mobile Toggle Button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex md:hidden items-center justify-center p-2 rounded-full border border-white/10 bg-white/5 text-slate-300 hover:text-teal-400 hover:border-teal-400/30 transition-all z-50 cursor-pointer"
-          aria-label="Toggle navigation menu"
-        >
-          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
+          {/* Mobile Toggle Button */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="flex md:hidden items-center justify-center p-2 rounded-full border border-white/10 bg-white/5 text-slate-300 hover:text-teal-400 hover:border-teal-400/30 transition-all z-50 cursor-pointer"
+            aria-label="Toggle navigation menu"
+          >
+            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile Menu Overlay */}

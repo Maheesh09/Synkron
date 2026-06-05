@@ -1,7 +1,5 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { HeroCanvas } from "./HeroCanvas";
-import { GitCommit, ScanSearch, BrainCircuit, GitPullRequest } from "lucide-react";
-
 const ease = [0.22, 1, 0.36, 1] as const;
 const container = {
   hidden: {},
@@ -55,92 +53,6 @@ const logos = [
   },
 ];
 
-const pipelineSteps = [
-  { icon: GitCommit, label: "Push", color: "#2DD4BF" },
-  { icon: ScanSearch, label: "Analyze", color: "#818CF8" },
-  { icon: BrainCircuit, label: "Write", color: "#2DD4BF" },
-  { icon: GitPullRequest, label: "MR open", color: "#818CF8" },
-];
-
-function PipelineWidget() {
-  const shouldReduce = useReducedMotion();
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.7, ease }}
-      className="w-full max-w-2xl mx-auto mt-14"
-    >
-      <div className="rounded-2xl border border-white/[0.07] bg-[#0A0A14]/80 backdrop-blur-sm overflow-hidden shadow-[0_0_80px_-20px_rgba(45,212,191,0.12)]">
-        {/* Top bar */}
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06]">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
-          <span className="ml-2 font-mono text-[10px] sm:text-xs text-slate-500 truncate max-w-[150px] sm:max-w-none">
-            synkron · pipeline run #1,847
-          </span>
-          <span className="ml-auto flex items-center gap-1.5 font-mono text-[10px] text-emerald-400">
-            <span
-              className="w-1.5 h-1.5 rounded-full bg-emerald-400"
-              style={
-                shouldReduce
-                  ? {}
-                  : { animation: "pulse-dot 1.8s ease-in-out infinite" }
-              }
-            />
-            live
-          </span>
-        </div>
-
-        {/* Pipeline steps */}
-        <div className="px-4 py-5 sm:px-6 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-2">
-          {pipelineSteps.map(({ icon: Icon, label, color }, i) => (
-            <motion.div
-              key={label}
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{
-                duration: 0.4,
-                delay: 0.9 + i * 0.12,
-                ease,
-              }}
-              className="flex flex-col items-center gap-2"
-            >
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center border"
-                style={{
-                  background: `${color}12`,
-                  borderColor: `${color}30`,
-                }}
-              >
-                <Icon className="w-4 h-4" style={{ color }} strokeWidth={1.75} />
-              </div>
-              <span className="font-mono text-[10px] text-slate-500 uppercase tracking-wider">
-                {label}
-              </span>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Log line */}
-        <div className="px-4 py-3 border-t border-white/[0.04] bg-[#06060F]/60">
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.4, duration: 0.6 }}
-            className="font-mono text-[9px] sm:text-[11px] text-slate-500 leading-relaxed break-words text-center sm:text-left"
-          >
-            <span className="text-teal-400">✓</span> docs/auth.md · 2 sections
-            rewritten ·{" "}
-            <span className="text-indigo-400">MR !42 opened</span>{" "}
-            <span className="text-slate-600">· 18s</span>
-          </motion.p>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
 
 export function Hero() {
   return (
@@ -248,10 +160,6 @@ export function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* Pipeline widget below fold */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-6">
-        <PipelineWidget />
-      </div>
     </section>
   );
 }

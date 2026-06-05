@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { LenisProvider } from "@/components/synkron/LenisProvider";
 import { Navbar } from "@/components/synkron/Navbar";
 import { Hero } from "@/components/synkron/Hero";
-import { Marquee } from "@/components/synkron/Marquee";
+import { ValueProps } from "@/components/synkron/ValueProps";
 import { HowItWorks } from "@/components/synkron/HowItWorks";
 import { AgentPipeline } from "@/components/synkron/AgentPipeline";
 import { LiveMockup } from "@/components/synkron/LiveMockup";
@@ -29,7 +29,7 @@ function Index() {
         <Navbar scrolled={scrolled} />
         <main>
           <Hero />
-          <Marquee />
+          <ValueProps />
           <HowItWorks />
           <AgentPipeline />
           <LiveMockup />
