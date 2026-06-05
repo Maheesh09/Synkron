@@ -21,7 +21,7 @@ import {
   PenTool,
   CheckCircle2,
   XCircle,
-  Minus,
+  type LucideIcon,
 } from "lucide-react";
 
 export const Route = createFileRoute("/app")({ component: AppPage });
@@ -323,7 +323,7 @@ function StatCard({
   label: string;
   value: string | number;
   accent?: boolean;
-  icon: React.ElementType;
+  icon: LucideIcon;
   delay?: number;
 }) {
   return (
