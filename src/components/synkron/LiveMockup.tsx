@@ -40,13 +40,11 @@ function useCountUp(end: number, start: boolean, dur = 1.2) {
 function Stats() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
-  const t = useCountUp(18, inView);
-  const docs = useCountUp(2, inView);
   return (
     <div ref={ref} className="mt-10 flex flex-wrap justify-center gap-3">
       {[
-        `⚡ ${t}s average pipeline`,
-        `📄 ${docs} docs updated`,
+        `⚡ 18s average pipeline`,
+        `📄 2 docs updated`,
         `✓ MR opened`,
       ].map((c) => (
         <motion.span
@@ -175,7 +173,7 @@ export function LiveMockup() {
                   </div>
                   <div>
                     <div className="text-white text-sm font-medium">synkron-bot</div>
-                    <div className="text-slate-500 text-xs">opened a moment ago</div>
+                    <div className="text-slate-500 text-xs">2 minutes ago</div>
                   </div>
                 </div>
 

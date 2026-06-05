@@ -6,7 +6,7 @@ import { SyncIcon } from "./SyncIcon";
 const links = [
   { label: "How it works", href: "#how" },
   { label: "Agents", href: "#agents" },
-  { label: "Dashboard", href: "#dashboard" },
+  { label: "Dashboard", href: "/app" },
   { label: "Docs", href: "#" },
 ];
 
@@ -42,12 +42,12 @@ export function Navbar({ scrolled }: { scrolled: boolean }) {
         {/* Desktop CTA */}
         <div className="hidden md:block">
           <motion.a
-            href="#waitlist"
+            href="/app"
             whileHover={{ scale: 1.03, boxShadow: "0 0 20px rgba(45,212,191,0.3)" }}
             whileTap={{ scale: 0.97 }}
             className="rounded-full border border-teal-400/30 bg-teal-400/10 text-teal-300 text-sm font-medium px-5 py-2 hover:bg-teal-400/20 transition-colors"
           >
-            Get early access →
+            Connect GitLab →
           </motion.a>
         </div>
 
@@ -97,11 +97,11 @@ export function Navbar({ scrolled }: { scrolled: boolean }) {
                 className="pt-4 border-t border-white/[0.04]"
               >
                 <a
-                  href="#waitlist"
+                  href="/app"
                   onClick={() => setIsOpen(false)}
                   className="flex items-center justify-center rounded-full bg-teal-400 text-[#04040A] font-semibold text-sm py-3.5 hover:bg-teal-300 transition-colors shadow-[0_0_24px_rgba(45,212,191,0.2)]"
                 >
-                  Get early access →
+                  Connect GitLab →
                 </a>
               </motion.div>
             </div>

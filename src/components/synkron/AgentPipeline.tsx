@@ -25,7 +25,7 @@ const agents = [
     name: "Doc Writer",
     role: "content generation",
     desc: "Rewrites only the affected sections — never the whole file. Learns from how your team edits its drafts over time.",
-    tools: ["get_file_content", "Gemini 2.0 Pro"],
+    tools: ["get_file_content", "Gemini 3.5 Flash"],
   },
   {
     n: "04",

@@ -65,69 +65,35 @@ export function FinalCTA() {
               letterSpacing: "-0.03em",
             }}
           >
-            Stop lying
+            Start syncing
             <br />
-            <span className="text-gradient">in your docs.</span>
+            <span className="text-gradient">today.</span>
           </h2>
           <p className="text-slate-400 mt-5 text-base sm:text-lg leading-relaxed">
-            Synkron is in early access. Join the waitlist.
+            Connect your GitLab repositories and keep your documentation perfectly in sync.
           </p>
         </motion.div>
 
-        <motion.form
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (email) setDone(true);
-          }}
-          className="mt-9"
+          className="mt-9 flex justify-center"
         >
-          <AnimatePresence mode="wait">
-            {!done ? (
-              <motion.div
-                key="form"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="flex flex-col sm:flex-row items-center justify-center gap-3 px-4 sm:px-0"
-              >
-                <motion.input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@company.com"
-                  whileFocus={{ borderColor: "rgba(45,212,191,0.4)" }}
-                  className="rounded-full bg-white/5 border border-white/10 px-6 py-3 text-white placeholder:text-slate-500 focus:outline-none w-full sm:w-[300px] transition-colors text-center sm:text-left"
-                />
-                <motion.button
-                  type="submit"
-                  whileHover={{
-                    scale: 1.04,
-                    y: -2,
-                    boxShadow: "0 0 40px rgba(45,212,191,0.45)",
-                  }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full sm:w-auto rounded-full bg-teal-400 hover:bg-teal-300 text-[#04040A] font-semibold px-8 py-3 transition-colors whitespace-nowrap"
-                >
-                  Join waitlist →
-                </motion.button>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="ok"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="inline-flex items-center gap-3 rounded-full bg-teal-400/15 border border-teal-400/40 px-7 py-3 text-teal-300"
-              >
-                <Check className="w-5 h-5" /> You're in! We'll be in touch.
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.form>
+          <motion.a
+            href="/app"
+            whileHover={{
+              scale: 1.04,
+              y: -2,
+              boxShadow: "0 0 40px rgba(45,212,191,0.45)",
+            }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full sm:w-auto rounded-full bg-teal-400 hover:bg-teal-300 text-[#04040A] font-semibold px-8 py-3 transition-colors whitespace-nowrap"
+          >
+            Connect GitLab →
+          </motion.a>
+        </motion.div>
 
         <motion.p
           initial={{ opacity: 0 }}

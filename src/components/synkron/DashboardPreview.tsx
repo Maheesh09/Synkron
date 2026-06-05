@@ -140,37 +140,13 @@ export function DashboardPreview() {
             animate={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
             style={{ transformStyle: "preserve-3d" }}
-            className="rounded-3xl border border-white/[0.08] bg-[#0D0D1C] p-7 shadow-[0_40px_120px_-30px_rgba(45,212,191,0.15)]"
+            className="rounded-3xl border border-white/[0.08] bg-[#0D0D1C] p-2 shadow-[0_40px_120px_-30px_rgba(45,212,191,0.15)] overflow-hidden"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-sm">Documentation Health</span>
-              <span className="flex items-center gap-1.5 text-emerald-400 text-xs font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
-                Live
-              </span>
-            </div>
-
-            <div className="mt-6">
-              <Gauge value={87} />
-            </div>
-
-            <div ref={statsRef} className="mt-6 space-y-0">
-              {[
-                ["Docs in sync", `${docs} / 156`],
-                ["MRs opened today", `${mrs}`],
-                ["Avg acceptance rate", `${rate}%`],
-              ].map(([k, v], i) => (
-                <div
-                  key={k}
-                  className={`flex items-center justify-between py-3 ${
-                    i > 0 ? "border-t border-white/[0.06]" : ""
-                  }`}
-                >
-                  <span className="text-slate-400 text-sm">{k}</span>
-                  <span className="text-white font-mono text-sm font-medium">{v}</span>
-                </div>
-              ))}
-            </div>
+            <img 
+              src="/dashboard_mockup.png" 
+              alt="Signal Dashboard Preview" 
+              className="w-full h-auto rounded-2xl opacity-90 hover:opacity-100 transition-opacity"
+            />
           </motion.div>
         </motion.div>
       </div>

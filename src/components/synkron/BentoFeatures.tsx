@@ -217,7 +217,7 @@ export function BentoFeatures() {
               <Sparkles className="w-5 h-5 text-indigo-300" strokeWidth={1.75} />
             </div>
             <h3 className="font-display text-white text-xl mt-4 font-semibold">
-              Powered by Gemini 2.0
+              Powered by Gemini 3.5 Flash
             </h3>
             <p className="text-slate-400 text-sm mt-2 leading-relaxed">
               Google's frontier model handles the reasoning behind every
