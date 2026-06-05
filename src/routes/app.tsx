@@ -229,7 +229,7 @@ function RunRow({ run, repoName }: { run: Run; repoName?: string }) {
         {/* Docs updated */}
         <span className="flex items-center gap-1 text-xs text-[#9BA3AE] shrink-0">
           <FileText className="w-3 h-3" />
-          {run.docs_updated ?? 0}&nbsp;docs
+          {run.docs_updated?.length ?? 0}&nbsp;docs
         </span>
 
         {/* Duration */}
@@ -508,7 +508,7 @@ function AppPage() {
               <StatCard
                 icon={FileText}
                 label="Docs updated"
-                value={health?.docs_updated ?? runs.reduce((s, r) => s + (r.docs_updated ?? 0), 0)}
+                value={health?.docs_updated ?? runs.reduce((s, r) => s + (r.docs_updated?.length ?? 0), 0)}
                 delay={0.18}
               />
             </>

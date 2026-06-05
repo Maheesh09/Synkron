@@ -33,7 +33,7 @@ export interface Run {
   status: string;
   commit_sha: string;
   mr_url: string | null;
-  docs_updated: number;
+  docs_updated: string[];
   created_at: string;
   duration_seconds: number;
 }

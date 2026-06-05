@@ -35,9 +35,15 @@ export function Navbar({ scrolled }: { scrolled: boolean }) {
         <ul className="hidden md:flex items-center gap-8 text-sm">
           {links.map((l) => (
             <li key={l.label}>
-              <a href={l.href} className="nav-link text-slate-400 hover:text-teal-400 transition-colors">
-                {l.label}
-              </a>
+              {l.href.startsWith("/") ? (
+                <Link to={l.href} className="nav-link ...">
+                  {l.label}
+                </Link>
+              ) : (
+                <a href={l.href} className="nav-link ...">
+                  {l.label}
+                </a>
+              )}
             </li>
           ))}
         </ul>
