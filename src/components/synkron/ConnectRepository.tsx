@@ -54,7 +54,7 @@ function CopyPill({ label, value }: { label: string; value: string }) {
         <button
           type="button"
           onClick={copy}
-          className="shrink-0 text-[#9BA3AE] hover:text-[#22D3EE] transition-colors"
+          className="shrink-0 text-[#9BA3AE] hover:text-teal-400 transition-colors"
           title="Copy to clipboard"
         >
           {copied ? (
@@ -96,8 +96,8 @@ function StepVerify({
   return (
     <div className={card}>
       {/* Icon */}
-      <div className="w-12 h-12 rounded-xl bg-[#22D3EE]/10 border border-[#22D3EE]/20 flex items-center justify-center mb-5">
-        <GitMerge className="w-5 h-5 text-[#22D3EE]" strokeWidth={1.75} />
+      <div className="w-12 h-12 rounded-xl bg-teal-400/10 border border-teal-400/20 flex items-center justify-center mb-5">
+        <GitMerge className="w-5 h-5 text-teal-400" strokeWidth={1.75} />
       </div>
 
       <h2 className="text-[#F5F7F8] font-display font-semibold text-xl leading-snug">
@@ -115,7 +115,7 @@ function StepVerify({
             placeholder="https://gitlab.com/your-group/your-project"
             className={[
               "h-10 bg-[#0A0C0E] border-[#24272B] text-[#F5F7F8] placeholder:text-[#4B5563]",
-              "focus-visible:ring-[#22D3EE]/40 focus-visible:border-[#22D3EE]/40 font-mono text-sm",
+              "focus-visible:ring-teal-400/40 focus-visible:border-teal-400/40 font-mono text-sm",
               errors.url ? "border-red-500/60 focus-visible:ring-red-500/30" : "",
             ].join(" ")}
             disabled={isSubmitting}
@@ -137,7 +137,7 @@ function StepVerify({
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full h-10 bg-[#22D3EE] hover:brightness-110 text-[#03242a] font-semibold text-sm rounded-lg transition"
+          className="w-full h-10 bg-teal-400 hover:brightness-110 text-[#03242a] font-semibold text-sm rounded-lg transition"
         >
           {isSubmitting ? (
             <>
@@ -304,7 +304,7 @@ function StepSuccess({ onConnected }: { onConnected: () => void }) {
 
       <Button
         onClick={onConnected}
-        className="mt-8 h-10 px-6 bg-[#22D3EE] hover:brightness-110 text-[#03242a] font-semibold text-sm rounded-lg transition"
+        className="mt-8 h-10 px-6 bg-teal-400 hover:brightness-110 text-[#03242a] font-semibold text-sm rounded-lg transition"
       >
         View dashboard
         <ArrowRight className="w-4 h-4" />
@@ -324,7 +324,7 @@ function StepDots({ step }: { step: 1 | 2 | 3 }) {
           className={[
             "h-1.5 rounded-full transition-all duration-300",
             n === step
-              ? "w-6 bg-[#22D3EE]"
+              ? "w-6 bg-teal-400"
               : n < step
               ? "w-3 bg-emerald-400"
               : "w-3 bg-[#24272B]",
@@ -346,7 +346,7 @@ export function ConnectRepository({ onConnected }: { onConnected: () => void }) 
       <div className="w-full max-w-md space-y-4">
         {/* Logo / back link */}
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-[#22D3EE] font-display font-semibold text-sm">Synkron</span>
+          <span className="text-teal-400 font-display font-semibold text-sm">Synkron</span>
           <span className="text-[#24272B]">·</span>
           <span className="text-[#9BA3AE] text-xs font-mono">Connect repository</span>
         </div>

@@ -52,8 +52,8 @@ const STATUS_MAP: Record<string, { pill: string; dot: string }> = {
     dot: "bg-emerald-400",
   },
   running: {
-    pill: "text-[#22D3EE] bg-[#22D3EE]/10 border-[#22D3EE]/25",
-    dot: "bg-[#22D3EE] animate-pulse",
+    pill: "text-teal-400 bg-teal-400/10 border-teal-400/25",
+    dot: "bg-teal-400 animate-pulse",
   },
   failed: {
     pill: "text-red-400 bg-red-400/10 border-red-400/25",
@@ -109,13 +109,13 @@ function AgentProgress({ run }: { run: Run }) {
                 className={[
                   "w-8 h-8 rounded-full border flex items-center justify-center",
                   done
-                    ? "bg-[#22D3EE]/15 border-[#22D3EE]/40"
+                    ? "bg-teal-400/15 border-teal-400/40"
                     : "bg-white/[0.03] border-[#24272B]",
-                  active ? "shadow-[0_0_12px_rgba(34,211,238,0.4)]" : "",
+                  active ? "shadow-[0_0_12px_rgba(45,212,191,0.4)]" : "",
                 ].join(" ")}
               >
                 <Icon
-                  className={`w-3.5 h-3.5 ${done ? "text-[#22D3EE]" : "text-[#4B5563]"}`}
+                  className={`w-3.5 h-3.5 ${done ? "text-teal-400" : "text-[#4B5563]"}`}
                   strokeWidth={1.5}
                 />
               </motion.div>
@@ -135,7 +135,7 @@ function AgentProgress({ run }: { run: Run }) {
                 animate={{ scaleX: i < steps - 1 ? 1 : 0 }}
                 transition={{ delay: i * 0.08 + 0.12, duration: 0.3, ease: "easeOut" }}
                 style={{ transformOrigin: "left" }}
-                className="flex-1 h-px bg-[#22D3EE]/30 mx-1 mb-5"
+                className="flex-1 h-px bg-teal-400/30 mx-1 mb-5"
               />
             )}
           </div>
@@ -185,7 +185,7 @@ function RunDetail({ run }: { run: Run }) {
             href={run.mr_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#22D3EE] text-[#03242a] font-semibold text-sm px-4 py-2 hover:brightness-110 transition"
+            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-teal-400 text-[#03242a] font-semibold text-sm px-4 py-2 hover:brightness-110 transition"
           >
             Open MR in GitLab
             <ExternalLink className="w-3.5 h-3.5" />
@@ -247,7 +247,7 @@ function RunRow({ run, repoName }: { run: Run; repoName?: string }) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="text-[#22D3EE] hover:underline text-xs font-mono shrink-0 hidden sm:block"
+            className="text-teal-400 hover:underline text-xs font-mono shrink-0 hidden sm:block"
           >
             View MR →
           </a>
@@ -294,7 +294,7 @@ function RepoCard({ repo }: { repo: Repo }) {
               href={repo.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#9BA3AE] font-mono text-xs truncate block hover:text-[#22D3EE] transition-colors"
+              className="text-[#9BA3AE] font-mono text-xs truncate block hover:text-teal-400 transition-colors"
             >
               {repo.url}
             </a>
@@ -304,7 +304,7 @@ function RepoCard({ repo }: { repo: Repo }) {
           </div>
         </div>
       </div>
-      <button className="mt-4 text-[#22D3EE] text-xs font-medium hover:underline">
+      <button className="mt-4 text-teal-400 text-xs font-medium hover:underline">
         View runs →
       </button>
     </div>
@@ -343,7 +343,7 @@ function StatCard({
       </div>
       <div
         className={`font-display font-bold text-3xl leading-none ${
-          accent ? "text-[#22D3EE]" : "text-[#F5F7F8]"
+          accent ? "text-teal-400" : "text-[#F5F7F8]"
         }`}
       >
         {value}
@@ -418,7 +418,7 @@ function AppPage() {
         </p>
         <button
           onClick={() => refetchAll()}
-          className="mt-1 rounded-full bg-[#22D3EE] text-[#03242a] font-semibold px-6 py-2.5 text-sm hover:brightness-110 transition"
+          className="mt-1 rounded-full bg-teal-400 text-[#03242a] font-semibold px-6 py-2.5 text-sm hover:brightness-110 transition"
         >
           Try again
         </button>
@@ -446,22 +446,22 @@ function AppPage() {
           <div className="flex items-center gap-4">
             <Link
               to="/"
-              className="flex items-center gap-1.5 text-[#9BA3AE] hover:text-[#22D3EE] text-sm transition-colors"
+              className="flex items-center gap-1.5 text-[#9BA3AE] hover:text-teal-400 text-sm transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Back to site
             </Link>
             <span className="text-[#24272B]">|</span>
             <span className="text-[#F5F7F8] font-semibold text-sm tracking-tight">
-              Signal&nbsp;
-              <span className="text-[#22D3EE] font-display">Dashboard</span>
+              Synkron&nbsp;
+              <span className="text-teal-400 font-display">Dashboard</span>
             </span>
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={() => refetchAll()}
-              className="flex items-center gap-1.5 text-[#9BA3AE] hover:text-[#22D3EE] text-xs font-mono transition-colors"
+              className="flex items-center gap-1.5 text-[#9BA3AE] hover:text-teal-400 text-xs font-mono transition-colors"
             >
               <RefreshCw
                 className={`w-3.5 h-3.5 ${runsRefetching ? "animate-spin" : ""}`}
@@ -470,7 +470,7 @@ function AppPage() {
             </button>
             <button
               onClick={() => setOnboardingDone(false)}
-              className="flex items-center gap-1.5 rounded-lg bg-[#22D3EE] text-[#03242a] font-semibold text-sm px-3 py-1.5 hover:brightness-110 transition"
+              className="flex items-center gap-1.5 rounded-lg bg-teal-400 text-[#03242a] font-semibold text-sm px-3 py-1.5 hover:brightness-110 transition"
             >
               <Plus className="w-4 h-4" />
               Add repo
