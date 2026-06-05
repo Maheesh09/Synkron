@@ -47,7 +47,7 @@ export function Navbar({ scrolled }: { scrolled: boolean }) {
           {!isOnApp && (
             <Link
               to="/app"
-              className="rounded-lg bg-[#22D3EE] text-[#03242a] font-medium text-sm px-4 py-2 hover:brightness-110 transition whitespace-nowrap"
+              className="rounded-lg bg-teal-400 text-[#03242a] font-medium text-sm px-4 py-2 hover:brightness-110 transition whitespace-nowrap"
             >
               Open dashboard →
             </Link>
