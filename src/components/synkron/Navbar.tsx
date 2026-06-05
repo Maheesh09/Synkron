@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { Link, useLocation } from "@tanstack/react-router";
 import { SyncIcon } from "./SyncIcon";
 
 const links = [
@@ -12,6 +13,8 @@ const links = [
 
 export function Navbar({ scrolled }: { scrolled: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { pathname } = useLocation();
+  const isOnApp = pathname === "/app";
 
   return (
     <header
@@ -39,8 +42,16 @@ export function Navbar({ scrolled }: { scrolled: boolean }) {
           ))}
         </ul>
 
-        {/* Desktop CTA */}
-        <div className="hidden md:block">
+        {/* Desktop CTAs */}
+        <div className="hidden md:flex items-center gap-3">
+          {!isOnApp && (
+            <Link
+              to="/app"
+              className="rounded-lg bg-[#22D3EE] text-[#03242a] font-medium text-sm px-4 py-2 hover:brightness-110 transition whitespace-nowrap"
+            >
+              Open dashboard →
+            </Link>
+          )}
           <motion.a
             href="/app"
             whileHover={{ scale: 1.03, boxShadow: "0 0 20px rgba(45,212,191,0.3)" }}

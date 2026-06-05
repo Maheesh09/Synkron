@@ -60,7 +60,7 @@ export default defineConfig(async ({ command, mode }) => {
     plugins,
     server: {
       host: "::",
-      port: 8080,
+      port: 3000,
     },
   };
 });
