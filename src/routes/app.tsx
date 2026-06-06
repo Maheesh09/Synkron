@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
-import { getHealth, getRepos, getRuns, type Repo, type Run } from "@/lib/api";
+import { getHealth, getRepos, getRuns, deleteRepo, type Repo, type Run } from "@/lib/api";
 import { ConnectRepository } from "@/components/synkron/ConnectRepository";
 import {
   Activity,
@@ -21,6 +21,7 @@ import {
   PenTool,
   CheckCircle2,
   XCircle,
+  Trash2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -277,10 +278,19 @@ function RunRow({ run, repoName }: { run: Run; repoName?: string }) {
 
 // ─── Repo card ────────────────────────────────────────────────────────────────
 
-function RepoCard({ repo }: { repo: Repo }) {
+function RepoCard({ repo, onDelete }: { repo: Repo; onDelete?: (id: number) => void }) {
+  const [isDeleting, setIsDeleting] = useState(false);
   const fresh = isWithin24h(repo.last_seen);
+
+  const handleDelete = async () => {
+    if (!onDelete) return;
+    setIsDeleting(true);
+    await onDelete(repo.repo_id);
+    setIsDeleting(false);
+  };
+
   return (
-    <div className={`${CARD} p-5`}>
+    <div className={`${CARD} p-5 flex flex-col justify-between`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0">
           <span
@@ -303,8 +313,16 @@ function RepoCard({ repo }: { repo: Repo }) {
             </p>
           </div>
         </div>
+        <button 
+          onClick={handleDelete}
+          disabled={isDeleting || !onDelete}
+          className="text-slate-500 hover:text-red-400 hover:bg-red-400/10 p-1.5 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Delete repository"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
       </div>
-      <button className="mt-4 text-teal-400 text-xs font-medium hover:underline">
+      <button className="mt-4 text-teal-400 text-xs font-medium hover:underline self-start">
         View runs →
       </button>
     </div>
@@ -401,6 +419,15 @@ function AppPage() {
     refetchRepos();
     refetchRuns();
   }
+
+  const handleDeleteRepo = async (id: number) => {
+    try {
+      await deleteRepo(id);
+      refetchAll();
+    } catch (e) {
+      console.error("Failed to delete repository:", e);
+    }
+  };
 
   const repoMap = Object.fromEntries(repos.map((r) => [r.repo_id, r.name]));
   const initialLoading = healthLoading || reposLoading || runsLoading;
@@ -532,7 +559,7 @@ function AppPage() {
             <ConnectRepository onConnected={() => { setOnboardingDone(true); refetchAll(); }} />
           ) : (
             <div className="grid sm:grid-cols-2 gap-4">
-              {repos.map((r) => <RepoCard key={r.repo_id} repo={r} />)}
+              {repos.map((r) => <RepoCard key={r.repo_id} repo={r} onDelete={handleDeleteRepo} />)}
             </div>
           )}
         </section>

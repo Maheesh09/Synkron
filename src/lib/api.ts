@@ -85,3 +85,11 @@ export async function connectRepo(gitlabUrl: string): Promise<ConnectedRepo> {
   });
   return handleResponse<ConnectedRepo>(res);
 }
+
+/** DELETE /api/repos/{repo_id} — delete a connected repository */
+export async function deleteRepo(repoId: number): Promise<{ status: string }> {
+  const res = await fetch(`${BASE_URL}/api/repos/${repoId}`, {
+    method: "DELETE",
+  });
+  return handleResponse<{ status: string }>(res);
+}
