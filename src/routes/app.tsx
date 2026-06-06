@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { rotateToken } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
@@ -122,9 +123,9 @@ const AGENTS = [
 function AgentProgress({ run }: { run: Run }) {
   const steps =
     run.status === "completed" ? 4 :
-    run.status === "running"   ? 2 :
-    run.status === "failed"    ? 1 :
-    0;
+      run.status === "running" ? 2 :
+        run.status === "failed" ? 1 :
+          0;
 
   return (
     <div className="flex items-center gap-0 w-full">
@@ -150,9 +151,8 @@ function AgentProgress({ run }: { run: Run }) {
                 />
               </motion.div>
               <span
-                className={`text-[10px] font-mono text-center leading-tight ${
-                  done ? "text-[#9BA3AE]" : "text-[#4B5563]"
-                }`}
+                className={`text-[10px] font-mono text-center leading-tight ${done ? "text-[#9BA3AE]" : "text-[#4B5563]"
+                  }`}
               >
                 {label}
               </span>
@@ -298,9 +298,8 @@ function RunRow({
         </span>
 
         <ChevronDown
-          className={`w-4 h-4 text-[#4B5563] shrink-0 transition-transform duration-200 ${
-            open ? "rotate-180" : ""
-          }`}
+          className={`w-4 h-4 text-[#4B5563] shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""
+            }`}
         />
       </button>
 
@@ -392,9 +391,8 @@ function RepoSummaryCard({
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-2.5 min-w-0">
           <span
-            className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
-              fresh ? "bg-emerald-400" : "bg-amber-400"
-            }`}
+            className={`mt-1 w-2 h-2 rounded-full shrink-0 ${fresh ? "bg-emerald-400" : "bg-amber-400"
+              }`}
           />
           <div className="min-w-0">
             <p className="text-[#F5F7F8] font-semibold text-sm truncate">{repo.name}</p>
@@ -444,6 +442,18 @@ function RepoSummaryCard({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+        <button
+          onClick={async (e) => {
+            e.stopPropagation();
+            const result = await rotateToken(repo.repo_id);
+            // Show the new token in a one-time modal
+            alert(`New webhook secret (copy now):\n\n${result.webhook_secret}\n\nUpdate this in GitLab → Settings → Webhooks.`);
+          }}
+          className="flex items-center gap-1.5 text-slate-500 hover:text-amber-400 border border-[#24272B] hover:border-amber-400/30 hover:bg-amber-400/5 px-2.5 py-1.5 rounded-lg text-xs transition-all"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Rotate token</span>
+        </button>
       </div>
 
       {/* Mini stats row */}
@@ -555,6 +565,18 @@ function RepoDetailBanner({
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          <button
+            onClick={async (e) => {
+              e.stopPropagation();
+              const result = await rotateToken(repo.repo_id);
+              // Show the new token in a one-time modal
+              alert(`New webhook secret (copy now):\n\n${result.webhook_secret}\n\nUpdate this in GitLab → Settings → Webhooks.`);
+            }}
+            className="flex items-center gap-1.5 text-slate-500 hover:text-amber-400 border border-[#24272B] hover:border-amber-400/30 hover:bg-amber-400/5 px-2.5 py-1.5 rounded-lg text-xs transition-all"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Rotate token</span>
+          </button>
         </div>
       </div>
     </div>
@@ -592,9 +614,8 @@ function StatCard({
         </div>
       </div>
       <div
-        className={`font-display font-bold text-3xl leading-none ${
-          accent ? "text-teal-400" : "text-[#F5F7F8]"
-        }`}
+        className={`font-display font-bold text-3xl leading-none ${accent ? "text-teal-400" : "text-[#F5F7F8]"
+          }`}
       >
         {value}
       </div>
@@ -614,6 +635,7 @@ function Skeleton({ className = "" }: { className?: string }) {
 
 function AppPage() {
   const [showAddRepo, setShowAddRepo] = useState(false);
+  const [isConnectingInitial, setIsConnectingInitial] = useState(false);
   // null = "All repos" view; number = a specific repo is focused
   const [selectedRepoId, setSelectedRepoId] = useState<number | null>(null);
 
@@ -628,7 +650,6 @@ function AppPage() {
     queryKey: ["repos"],
     queryFn: getRepos,
     refetchInterval: 30_000,
-    enabled: typeof window !== "undefined",
   });
 
   const {
@@ -640,7 +661,6 @@ function AppPage() {
     queryKey: ["runs"],
     queryFn: () => getRuns(100),
     refetchInterval: 15_000,
-    enabled: typeof window !== "undefined",
   });
 
   function refetchAll() {
@@ -685,6 +705,13 @@ function AppPage() {
 
   const initialLoading = reposLoading || runsLoading;
 
+  // If we have 0 repos and we're not loading, trigger the initial connect flow
+  useEffect(() => {
+    if (!initialLoading && repos.length === 0 && !isConnectingInitial) {
+      setIsConnectingInitial(true);
+    }
+  }, [initialLoading, repos.length, isConnectingInitial]);
+
   // ── Full-screen guards ──
   if (reposError && !reposLoading) {
     return (
@@ -706,10 +733,10 @@ function AppPage() {
     );
   }
 
-  if (!initialLoading && repos.length === 0) {
+  if (isConnectingInitial) {
     return (
       <ConnectRepository
-        onConnected={() => refetchAll()}
+        onConnected={() => { setIsConnectingInitial(false); refetchAll(); }}
         onCancel={() => { window.location.href = "/"; }}
       />
     );
