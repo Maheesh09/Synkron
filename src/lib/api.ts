@@ -93,3 +93,11 @@ export async function deleteRepo(repoId: number): Promise<{ status: string }> {
   });
   return handleResponse<{ status: string }>(res);
 }
+
+/** POST /api/repos/{id}/rotate-token — regenerate webhook token */
+export async function rotateToken(repoId: number): Promise<ConnectedRepo> {
+  const res = await fetch(`${BASE_URL}/api/repos/${repoId}/rotate-token`, {
+    method: "POST",
+  });
+  return handleResponse<ConnectedRepo>(res);
+}
