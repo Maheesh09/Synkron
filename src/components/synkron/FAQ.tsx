@@ -129,7 +129,7 @@ export function FAQ() {
         >
           Still have a question?{" "}
           <a
-            href="https://github.com/Maheesh09/Synkron/discussions"
+            href="https://github.com/Maheesh09/Synkron"
             target="_blank"
             rel="noopener noreferrer"
             className="text-teal-400 hover:underline"
