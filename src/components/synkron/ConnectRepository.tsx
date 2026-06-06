@@ -70,11 +70,10 @@ function CopyPill({ label, value }: { label: string; value: string }) {
 
 // ─── Step 1 — URL form ───────────────────────────────────────────────────────
 
-function StepVerify({
-  onVerified,
-}: {
-  onVerified: (data: ConnectedRepo) => void;
-}) {
+function StepVerify({ onVerified, }:
+  {
+    onVerified: () => void;
+  }) {
   const [apiError, setApiError] = useState<string | null>(null);
 
   const {
@@ -86,8 +85,8 @@ function StepVerify({
   async function onSubmit({ url }: FormValues) {
     setApiError(null);
     try {
-      const result = await connectRepo(url.trim());
-      onVerified(result);
+      await connectRepo(url.trim());  // ← don't need the return value anymore
+      onVerified();
     } catch (e: any) {
       setApiError(e.message ?? "Failed to connect — check the URL and try again.");
     }
@@ -156,84 +155,7 @@ function StepVerify({
   );
 }
 
-// ─── Step 2 — Webhook setup ──────────────────────────────────────────────────
 
-function StepWebhook({
-  repo,
-  onConfigured,
-}: {
-  repo: ConnectedRepo;
-  onConfigured: () => void;
-}) {
-  // The backend already registered the repo in MongoDB during connectRepo(),
-  // so we can proceed immediately without polling getRepos().
-  function handleDone() {
-    onConfigured();
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className={card}
-    >
-      {/* Verified badge */}
-      <div className="flex items-center gap-2 mb-5">
-        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-        <span className="text-emerald-400 text-sm font-medium">{repo.name}</span>
-        <span className="ml-auto text-[#9BA3AE] text-xs font-mono">branch: {repo.default_branch}</span>
-      </div>
-
-      <h2 className="text-[#F5F7F8] font-display font-semibold text-lg leading-snug">
-        Configure the webhook in GitLab
-      </h2>
-      <p className="text-[#9BA3AE] text-sm leading-relaxed mt-1.5">
-        In your GitLab project go to{" "}
-        <span className="text-[#F5F7F8] font-mono">Settings → Webhooks</span> and fill in:
-      </p>
-
-      {/* Copy fields */}
-      <div className="mt-5 space-y-3">
-        <CopyPill label="URL" value={repo.webhook_url} />
-        <CopyPill label="Secret" value={repo.webhook_secret} />
-      </div>
-
-      {/* Secret note */}
-      <p className="mt-2.5 text-[#9BA3AE] text-xs font-mono flex items-start gap-1.5">
-        <AlertCircle className="w-3 h-3 shrink-0 mt-0.5 text-amber-400" />
-        Ask your Synkron admin for the full secret token — only the first 4 chars are shown here.
-      </p>
-
-      {/* Trigger badges */}
-      <div className="mt-5">
-        <p className="text-[#9BA3AE] text-xs mb-2.5">Enable these trigger events:</p>
-        <div className="flex flex-wrap gap-2">
-          {["✓ Push events (main branch only)", "✓ Merge request events"].map((t) => (
-            <span
-              key={t}
-              className="inline-flex items-center rounded-full border border-emerald-500/25 bg-emerald-400/10 px-3 py-1 text-emerald-400 text-xs font-mono"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* CTA */}
-      <div className="mt-6">
-        <Button
-          onClick={handleDone}
-          disabled={false}
-          className="w-full h-10 bg-emerald-500 hover:bg-emerald-400 text-[#03242a] font-semibold text-sm rounded-lg transition"
-        >
-          My webhook is configured
-          <ArrowRight className="w-4 h-4" />
-        </Button>
-      </div>
-    </motion.div>
-  );
-}
 
 // ─── Step 3 — Success ────────────────────────────────────────────────────────
 
@@ -245,7 +167,6 @@ function StepSuccess({ onConnected }: { onConnected: () => void }) {
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       className={`${card} flex flex-col items-center text-center`}
     >
-      {/* Animated checkmark */}
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
@@ -259,8 +180,8 @@ function StepSuccess({ onConnected }: { onConnected: () => void }) {
         You're synced.
       </h2>
       <p className="text-[#9BA3AE] text-sm mt-2 max-w-xs leading-relaxed">
-        Push a commit to trigger your first doc MR. Synkron will watch every
-        push and keep your docs up to date.
+        Webhook configured automatically. Push a commit to trigger
+        your first doc MR — Synkron will watch every push from here.
       </p>
 
       <Button
@@ -276,10 +197,10 @@ function StepSuccess({ onConnected }: { onConnected: () => void }) {
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
-function StepDots({ step }: { step: 1 | 2 | 3 }) {
+function StepDots({ step }: { step: 1 | 2 }) {
   return (
     <div className="flex items-center gap-2 mb-6">
-      {([1, 2, 3] as const).map((n) => (
+      {([1, 2] as const).map((n) => (
         <div
           key={n}
           className={[
@@ -287,8 +208,8 @@ function StepDots({ step }: { step: 1 | 2 | 3 }) {
             n === step
               ? "w-6 bg-teal-400"
               : n < step
-              ? "w-3 bg-emerald-400"
-              : "w-3 bg-[#24272B]",
+                ? "w-3 bg-emerald-400"
+                : "w-3 bg-[#24272B]",
           ].join(" ")}
         />
       ))}
@@ -305,20 +226,17 @@ export function ConnectRepository({
   onConnected: () => void;
   onCancel?: () => void;
 }) {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [verified, setVerified] = useState<ConnectedRepo | null>(null);
+  const [step, setStep] = useState<1 | 2>(1);   // ← back to 1 | 2
 
   return (
     <div className="min-h-screen bg-[#04040A] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md space-y-4">
-        {/* Logo / back link */}
         <div className="flex items-center gap-2 mb-2">
           <span className="text-teal-400 font-display font-semibold text-sm">Synkron</span>
           <span className="text-[#24272B]">·</span>
           <span className="text-[#9BA3AE] text-xs font-mono">Connect repository</span>
         </div>
 
-        {/* Optional back link when launched from inside the dashboard */}
         {onCancel && (
           <button
             onClick={onCancel}
@@ -330,26 +248,15 @@ export function ConnectRepository({
 
         <StepDots step={step} />
 
-        {/* Step 1 — always rendered so form state persists on error */}
         {step === 1 && (
           <StepVerify
-            onVerified={(data) => {
-              setVerified(data);
-              setStep(2);
-            }}
+            onVerified={() => setStep(2)}   // ← no longer passes data, just advances
           />
         )}
 
-        {/* Step 2 — webhook setup */}
-        {step === 2 && verified && (
-          <StepWebhook
-            repo={verified}
-            onConfigured={() => setStep(3)}
-          />
+        {step === 2 && (
+          <StepSuccess onConnected={onConnected} />
         )}
-
-        {/* Step 3 — success */}
-        {step === 3 && <StepSuccess onConnected={onConnected} />}
       </div>
     </div>
   );
