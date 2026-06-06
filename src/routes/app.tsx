@@ -6,6 +6,17 @@ import { formatDistanceToNow } from "date-fns";
 import { getHealth, getRepos, getRuns, deleteRepo, type Repo, type Run } from "@/lib/api";
 import { ConnectRepository } from "@/components/synkron/ConnectRepository";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Activity,
   GitMerge,
   Clock,
@@ -313,14 +324,40 @@ function RepoCard({ repo, onDelete }: { repo: Repo; onDelete?: (id: number) => v
             </p>
           </div>
         </div>
-        <button 
-          onClick={handleDelete}
-          disabled={isDeleting || !onDelete}
-          className="text-slate-500 hover:text-red-400 hover:bg-red-400/10 p-1.5 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          title="Delete repository"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button
+              disabled={isDeleting || !onDelete}
+              className="text-slate-500 hover:text-red-400 hover:bg-red-400/10 p-1.5 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Delete repository"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="bg-[#111315] border border-[#24272B] text-[#F5F7F8]">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="font-display">
+                Remove this repository?
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-[#9BA3AE]">
+                "{repo.name}" will be disconnected from Synkron. Existing
+                pipeline runs are kept. You can reconnect at any time.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="bg-transparent border-[#24272B] text-[#9BA3AE] hover:bg-white/5 hover:text-[#F5F7F8]">
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="bg-red-500/80 hover:bg-red-500 text-white border-0"
+              >
+                {isDeleting ? "Removing…" : "Yes, remove"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
       <button className="mt-4 text-teal-400 text-xs font-medium hover:underline self-start">
         View runs →
@@ -381,7 +418,7 @@ function Skeleton({ className = "" }: { className?: string }) {
 // ─── App page ─────────────────────────────────────────────────────────────────
 
 function AppPage() {
-  const [onboardingDone, setOnboardingDone] = useState(false);
+  const [showAddRepo, setShowAddRepo] = useState(false);
 
   const {
     data: health,
@@ -453,14 +490,27 @@ function AppPage() {
     );
   }
 
-  // ── Onboarding gate ──
-  if (!initialLoading && repos.length === 0 && !onboardingDone) {
+  // ── First-time onboarding: no repos yet ──
+  // Gate purely on real data. onboarding is not done until at least one repo
+  // is in the DB. This means a failed/wrong repo entry can never bypass it.
+  if (!initialLoading && repos.length === 0) {
+    return (
+      <ConnectRepository
+        onConnected={() => refetchAll()}
+      />
+    );
+  }
+
+  // ── Add repo (triggered from inside the dashboard) ──
+  // Renders as a full-screen takeover so the user sees only the wizard.
+  if (showAddRepo) {
     return (
       <ConnectRepository
         onConnected={() => {
-          setOnboardingDone(true);
+          setShowAddRepo(false);
           refetchAll();
         }}
+        onCancel={() => setShowAddRepo(false)}
       />
     );
   }
@@ -496,7 +546,7 @@ function AppPage() {
               Refresh
             </button>
             <button
-              onClick={() => setOnboardingDone(false)}
+              onClick={() => setShowAddRepo(true)}
               className="flex items-center gap-1.5 rounded-lg bg-teal-400 text-[#03242a] font-semibold text-sm px-3 py-1.5 hover:brightness-110 transition"
             >
               <Plus className="w-4 h-4" />
@@ -555,11 +605,11 @@ function AppPage() {
             <div className="grid sm:grid-cols-2 gap-4">
               {[...Array(2)].map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
             </div>
-          ) : repos.length === 0 ? (
-            <ConnectRepository onConnected={() => { setOnboardingDone(true); refetchAll(); }} />
           ) : (
             <div className="grid sm:grid-cols-2 gap-4">
-              {repos.map((r) => <RepoCard key={r.repo_id} repo={r} onDelete={handleDeleteRepo} />)}
+              {repos.map((r) => (
+                <RepoCard key={r.repo_id} repo={r} onDelete={handleDeleteRepo} />
+              ))}
             </div>
           )}
         </section>
