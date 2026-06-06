@@ -33,3 +33,4 @@ dist-ssr
 
 # Claude
 CLAUDE.md
+.env
