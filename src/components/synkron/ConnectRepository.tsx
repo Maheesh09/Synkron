@@ -5,7 +5,7 @@ import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { connectRepo, getRepos, type ConnectedRepo } from "@/lib/api";
+import { connectRepo, type ConnectedRepo } from "@/lib/api";
 import {
   Loader2,
   Clipboard,
@@ -165,26 +165,10 @@ function StepWebhook({
   repo: ConnectedRepo;
   onConfigured: () => void;
 }) {
-  const [checking, setChecking] = useState(false);
-  const [notDetected, setNotDetected] = useState(false);
-
-  async function handleDone() {
-    setChecking(true);
-    setNotDetected(false);
-    try {
-      const repos = await getRepos();
-      const found = repos.some((r) => r.repo_id === repo.project_id);
-      if (found) {
-        onConfigured();
-      } else {
-        setNotDetected(true);
-      }
-    } catch {
-      // network error — still let them proceed, they can check later
-      onConfigured();
-    } finally {
-      setChecking(false);
-    }
+  // The backend already registered the repo in MongoDB during connectRepo(),
+  // so we can proceed immediately without polling getRepos().
+  function handleDone() {
+    onConfigured();
   }
 
   return (
@@ -237,38 +221,15 @@ function StepWebhook({
       </div>
 
       {/* CTA */}
-      <div className="mt-6 space-y-2.5">
+      <div className="mt-6">
         <Button
           onClick={handleDone}
-          disabled={checking}
+          disabled={false}
           className="w-full h-10 bg-emerald-500 hover:bg-emerald-400 text-[#03242a] font-semibold text-sm rounded-lg transition"
         >
-          {checking ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Checking…
-            </>
-          ) : (
-            <>
-              My webhook is configured
-              <ArrowRight className="w-4 h-4" />
-            </>
-          )}
+          My webhook is configured
+          <ArrowRight className="w-4 h-4" />
         </Button>
-
-        <AnimatePresence>
-          {notDetected && (
-            <motion.p
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="flex items-start gap-1.5 text-amber-400 text-xs font-mono"
-            >
-              <AlertCircle className="w-3 h-3 shrink-0 mt-0.5" />
-              Not detected yet — push a commit to trigger the first run, then come back here.
-            </motion.p>
-          )}
-        </AnimatePresence>
       </div>
     </motion.div>
   );
@@ -315,10 +276,10 @@ function StepSuccess({ onConnected }: { onConnected: () => void }) {
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
-function StepDots({ step }: { step: 1 | 2 }) {
+function StepDots({ step }: { step: 1 | 2 | 3 }) {
   return (
     <div className="flex items-center gap-2 mb-6">
-      {([1, 2] as const).map((n) => (
+      {([1, 2, 3] as const).map((n) => (
         <div
           key={n}
           className={[
@@ -337,8 +298,14 @@ function StepDots({ step }: { step: 1 | 2 }) {
 
 // ─── Root export ─────────────────────────────────────────────────────────────
 
-export function ConnectRepository({ onConnected }: { onConnected: () => void }) {
-  const [step, setStep] = useState<1 | 2>(1);
+export function ConnectRepository({
+  onConnected,
+  onCancel,
+}: {
+  onConnected: () => void;
+  onCancel?: () => void;
+}) {
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [verified, setVerified] = useState<ConnectedRepo | null>(null);
 
   return (
@@ -350,6 +317,16 @@ export function ConnectRepository({ onConnected }: { onConnected: () => void }) 
           <span className="text-[#24272B]">·</span>
           <span className="text-[#9BA3AE] text-xs font-mono">Connect repository</span>
         </div>
+
+        {/* Optional back link when launched from inside the dashboard */}
+        {onCancel && (
+          <button
+            onClick={onCancel}
+            className="text-[#9BA3AE] text-xs font-mono flex items-center gap-1 hover:text-teal-400 transition-colors mb-4"
+          >
+            ← Back to dashboard
+          </button>
+        )}
 
         <StepDots step={step} />
 
@@ -363,8 +340,16 @@ export function ConnectRepository({ onConnected }: { onConnected: () => void }) 
           />
         )}
 
-        {/* Step 2 — success */}
-        {step === 2 && <StepSuccess onConnected={onConnected} />}
+        {/* Step 2 — webhook setup */}
+        {step === 2 && verified && (
+          <StepWebhook
+            repo={verified}
+            onConfigured={() => setStep(3)}
+          />
+        )}
+
+        {/* Step 3 — success */}
+        {step === 3 && <StepSuccess onConnected={onConnected} />}
       </div>
     </div>
   );
