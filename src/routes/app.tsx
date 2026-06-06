@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
-import { getHealth, getRepos, getRuns, deleteRepo, type Repo, type Run } from "@/lib/api";
+import { getRepos, getRuns, deleteRepo, type Repo, type Run } from "@/lib/api";
 import { ConnectRepository } from "@/components/synkron/ConnectRepository";
 import {
   AlertDialog,
@@ -62,6 +62,7 @@ function isWithin24h(iso: string) {
 function computeStats(runs: Run[]) {
   const total = runs.length;
   const completed = runs.filter((r) => r.status === "completed").length;
+  const failed = runs.filter((r) => r.status === "failed").length;
   const durations = runs
     .filter((r) => r.status === "completed" && r.duration_seconds != null)
     .map((r) => r.duration_seconds);
@@ -70,8 +71,10 @@ function computeStats(runs: Run[]) {
       ? Math.round((durations.reduce((a, b) => a + b, 0) / durations.length) * 10) / 10
       : null;
   const docsUpdated = runs.reduce((s, r) => s + (r.docs_updated?.length ?? 0), 0);
-  const successRate = total > 0 ? Math.round((completed / total) * 1000) / 10 : 0;
-  return { total, completed, successRate, avgDuration, docsUpdated };
+  // Only count completed vs failed — skipped runs are not meaningful for success rate
+  const decisiveRuns = completed + failed;
+  const successRate = decisiveRuns > 0 ? Math.round((completed / decisiveRuns) * 1000) / 10 : 0;
+  return { total, completed, failed, successRate, avgDuration, docsUpdated };
 }
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
@@ -614,11 +617,6 @@ function AppPage() {
   // null = "All repos" view; number = a specific repo is focused
   const [selectedRepoId, setSelectedRepoId] = useState<number | null>(null);
 
-  const { data: health, isLoading: healthLoading } = useQuery({
-    queryKey: ["health"],
-    queryFn: getHealth,
-    refetchInterval: 30_000,
-  });
 
   const {
     data: repos = [],
@@ -678,7 +676,12 @@ function AppPage() {
     return m;
   }, [runs]);
 
-  const initialLoading = healthLoading || reposLoading || runsLoading;
+  // ── Global stats — same formula as per-repo, applied to all runs ──
+  // This guarantees consistent numbers across every view: skipped runs are
+  // excluded from the success-rate denominator everywhere.
+  const globalStats = useMemo(() => computeStats(runs), [runs]);
+
+  const initialLoading = reposLoading || runsLoading;
 
   // ── Full-screen guards ──
   if (reposError && !reposLoading) {
@@ -871,30 +874,30 @@ function AppPage() {
               transition={{ duration: 0.25 }}
               className="space-y-8"
             >
-              {/* Global stats */}
+              {/* Global stats — computed from runs[], same formula as per-repo view */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {initialLoading ? (
                   [...Array(4)].map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)
                 ) : (
                   <>
-                    <StatCard icon={Activity} label="Total runs" value={health?.total_runs ?? 0} delay={0} />
+                    <StatCard icon={Activity} label="Total runs" value={globalStats.total} delay={0} />
                     <StatCard
                       icon={CheckCircle2}
                       label="Success rate"
-                      value={`${health?.success_rate ?? 0}%`}
+                      value={`${globalStats.successRate}%`}
                       accent
                       delay={0.06}
                     />
                     <StatCard
                       icon={Clock}
                       label="Avg pipeline"
-                      value={health?.avg_duration != null ? `${health.avg_duration}s` : "—"}
+                      value={globalStats.avgDuration != null ? `${globalStats.avgDuration}s` : "—"}
                       delay={0.12}
                     />
                     <StatCard
                       icon={FileText}
                       label="Docs updated"
-                      value={health?.docs_updated ?? 0}
+                      value={globalStats.docsUpdated}
                       delay={0.18}
                     />
                   </>
