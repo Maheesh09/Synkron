@@ -16,11 +16,8 @@ function Card({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{
-        borderColor: "rgba(255,255,255,0.14)",
-        boxShadow: "0 0 48px rgba(0,0,0,0.6)",
-      }}
-      className={`rounded-3xl border border-white/[0.07] bg-[#0D0D1C] overflow-hidden cursor-pointer transition-colors ${className}`}
+      whileHover={{ boxShadow: "0 0 48px rgba(0,0,0,0.6)" }}
+      className={`bento-card rounded-3xl border border-white/[0.07] bg-[#0D0D1C] overflow-hidden cursor-pointer transition-colors ${className}`}
     >
       {children}
     </motion.div>
