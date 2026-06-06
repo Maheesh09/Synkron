@@ -11,6 +11,7 @@ import { DashboardPreview } from "@/components/synkron/DashboardPreview";
 import { BentoFeatures } from "@/components/synkron/BentoFeatures";
 import { FinalCTA } from "@/components/synkron/FinalCTA";
 import { Footer } from "@/components/synkron/Footer";
+import { FAQ } from "@/components/synkron/FAQ";
 
 export const Route = createFileRoute("/")({ component: Index });
 
@@ -25,7 +26,7 @@ function Index() {
 
   return (
     <LenisProvider>
-      <div className="bg-[#04040A] text-[#F1F5F9] min-h-screen">
+      <div className="bg-[#04040A] text-[#F1F5F9] min-h-screen noise">
         <Navbar scrolled={scrolled} />
         <main>
           <Hero />
@@ -35,6 +36,7 @@ function Index() {
           <LiveMockup />
           <DashboardPreview />
           <BentoFeatures />
+          <FAQ />
           <FinalCTA />
         </main>
         <Footer />
