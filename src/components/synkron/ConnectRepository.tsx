@@ -315,10 +315,10 @@ function StepSuccess({ onConnected }: { onConnected: () => void }) {
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
-function StepDots({ step }: { step: 1 | 2 | 3 }) {
+function StepDots({ step }: { step: 1 | 2 }) {
   return (
     <div className="flex items-center gap-2 mb-6">
-      {([1, 2, 3] as const).map((n) => (
+      {([1, 2] as const).map((n) => (
         <div
           key={n}
           className={[
@@ -338,7 +338,7 @@ function StepDots({ step }: { step: 1 | 2 | 3 }) {
 // ─── Root export ─────────────────────────────────────────────────────────────
 
 export function ConnectRepository({ onConnected }: { onConnected: () => void }) {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2>(1);
   const [verified, setVerified] = useState<ConnectedRepo | null>(null);
 
   return (
@@ -363,16 +363,8 @@ export function ConnectRepository({ onConnected }: { onConnected: () => void }) 
           />
         )}
 
-        {/* Step 2 — slides in */}
-        {step === 2 && verified && (
-          <StepWebhook
-            repo={verified}
-            onConfigured={() => setStep(3)}
-          />
-        )}
-
-        {/* Step 3 — success */}
-        {step === 3 && <StepSuccess onConnected={onConnected} />}
+        {/* Step 2 — success */}
+        {step === 2 && <StepSuccess onConnected={onConnected} />}
       </div>
     </div>
   );

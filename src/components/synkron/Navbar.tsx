@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getRepos } from "@/lib/api";
 import { SyncIcon } from "./SyncIcon";
 
 const links = [
@@ -15,6 +17,16 @@ export function Navbar({ scrolled }: { scrolled: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
   const { pathname } = useLocation();
   const isOnApp = pathname === "/app";
+
+  const { data: repos = [] } = useQuery({
+    queryKey: ["repos"],
+    queryFn: getRepos,
+    staleTime: 60000,
+    retry: false, // Don't keep retrying if API is unreachable for a new visitor
+  });
+
+  const hasRepos = repos.length > 0;
+  const visibleLinks = links.filter((l) => l.label !== "Dashboard" || hasRepos);
 
   return (
     <header
@@ -36,7 +48,7 @@ export function Navbar({ scrolled }: { scrolled: boolean }) {
 
         {/* Desktop Links */}
         <ul className="hidden md:flex flex-none items-center gap-8 text-sm">
-          {links.map((l) => (
+          {visibleLinks.map((l) => (
             <li key={l.label}>
               {l.href.startsWith("/") ? (
                 <Link to={l.href} className="text-slate-400 hover:text-teal-400 transition-colors">
@@ -55,7 +67,7 @@ export function Navbar({ scrolled }: { scrolled: boolean }) {
         <div className="flex flex-1 items-center justify-end gap-3">
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
-            {!isOnApp && (
+            {!isOnApp && hasRepos && (
               <Link
                 to="/app"
                 className="rounded-lg bg-teal-400 text-[#03242a] font-medium text-sm px-4 py-2 hover:brightness-110 transition whitespace-nowrap"
@@ -96,7 +108,7 @@ export function Navbar({ scrolled }: { scrolled: boolean }) {
           >
             <div className="flex flex-col gap-6 px-8 py-8">
               <ul className="flex flex-col gap-5">
-                {links.map((l, i) => (
+                {visibleLinks.map((l, i) => (
                   <motion.li
                     key={l.label}
                     initial={{ opacity: 0, x: -16 }}
@@ -116,7 +128,7 @@ export function Navbar({ scrolled }: { scrolled: boolean }) {
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: links.length * 0.05 + 0.05, duration: 0.3 }}
+                transition={{ delay: visibleLinks.length * 0.05 + 0.05, duration: 0.3 }}
                 className="pt-4 border-t border-white/[0.04]"
               >
                 <a
