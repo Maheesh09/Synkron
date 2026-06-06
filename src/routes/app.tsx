@@ -628,6 +628,7 @@ function AppPage() {
     queryKey: ["repos"],
     queryFn: getRepos,
     refetchInterval: 30_000,
+    enabled: typeof window !== "undefined",
   });
 
   const {
@@ -637,8 +638,9 @@ function AppPage() {
     isRefetching: runsRefetching,
   } = useQuery({
     queryKey: ["runs"],
-    queryFn: () => getRuns(100), // fetch more so per-repo filtering is meaningful
+    queryFn: () => getRuns(100),
     refetchInterval: 15_000,
+    enabled: typeof window !== "undefined",
   });
 
   function refetchAll() {
@@ -705,7 +707,12 @@ function AppPage() {
   }
 
   if (!initialLoading && repos.length === 0) {
-    return <ConnectRepository onConnected={() => refetchAll()} />;
+    return (
+      <ConnectRepository
+        onConnected={() => refetchAll()}
+        onCancel={() => { window.location.href = "/"; }}
+      />
+    );
   }
 
   if (showAddRepo) {
