@@ -1,4 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { AuthGate } from "@/components/synkron/AuthGate";
+import { getFirebaseAuth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
 import { useState, useMemo, useEffect } from "react";
 import { rotateToken } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
@@ -38,7 +41,13 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-export const Route = createFileRoute("/app")({ component: AppPage });
+export const Route = createFileRoute("/app")({
+  component: () => (
+    <AuthGate>
+      <AppPage />
+    </AuthGate>
+  ),
+});
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 
@@ -773,6 +782,15 @@ function AppPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <span className="hidden sm:inline text-[#9BA3AE] text-xs font-mono max-w-[180px] truncate">
+              {getFirebaseAuth().currentUser?.email}
+            </span>
+            <button
+              onClick={() => signOut(getFirebaseAuth())}
+              className="text-[#9BA3AE] hover:text-red-400 text-xs font-mono transition-colors"
+            >
+              Sign out
+            </button>
             <button
               onClick={() => refetchAll()}
               className="flex items-center gap-1.5 text-[#9BA3AE] hover:text-teal-400 text-xs font-mono transition-colors"
