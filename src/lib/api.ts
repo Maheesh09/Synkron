@@ -1,6 +1,16 @@
 // ─── Base URL ────────────────────────────────────────────────────────────────
 export const BASE_URL = import.meta.env.VITE_API_URL as string;
 
+// ─── Auth (Firebase ID token) ────────────────────────────────────────────────
+import { getFirebaseAuth } from "@/lib/firebase";
+
+async function authHeaders(): Promise<Record<string, string>> {
+  const user = getFirebaseAuth().currentUser;
+  if (!user) return {};
+  const token = await user.getIdToken();
+  return { Authorization: `Bearer ${token}` };
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 async function handleResponse<T>(res: Response): Promise<T> {
@@ -60,19 +70,19 @@ export interface ConnectedRepo {
 
 /** GET /api/repos — list all connected repositories */
 export async function getRepos(): Promise<Repo[]> {
-  const res = await fetch(`${BASE_URL}/api/repos`);
+  const res = await fetch(`${BASE_URL}/api/repos`, { headers: { ...(await authHeaders()) } });
   return handleResponse<Repo[]>(res);
 }
 
 /** GET /api/runs?limit={limit} — list recent pipeline runs */
 export async function getRuns(limit = 20): Promise<Run[]> {
-  const res = await fetch(`${BASE_URL}/api/runs?limit=${limit}`);
+  const res = await fetch(`${BASE_URL}/api/runs?limit=${limit}`, { headers: { ...(await authHeaders()) } });
   return handleResponse<Run[]>(res);
 }
 
 /** GET /api/health — aggregate health stats */
 export async function getHealth(): Promise<Health> {
-  const res = await fetch(`${BASE_URL}/api/health`);
+  const res = await fetch(`${BASE_URL}/api/health`, { headers: { ...(await authHeaders()) } });
   return handleResponse<Health>(res);
 }
 
@@ -80,7 +90,7 @@ export async function getHealth(): Promise<Health> {
 export async function connectRepo(gitlabUrl: string): Promise<ConnectedRepo> {
   const res = await fetch(`${BASE_URL}/api/repos/connect`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await authHeaders()) },
     body: JSON.stringify({ gitlab_url: gitlabUrl }),
   });
   return handleResponse<ConnectedRepo>(res);
@@ -90,6 +100,7 @@ export async function connectRepo(gitlabUrl: string): Promise<ConnectedRepo> {
 export async function deleteRepo(repoId: number): Promise<{ status: string }> {
   const res = await fetch(`${BASE_URL}/api/repos/${repoId}`, {
     method: "DELETE",
+    headers: { ...(await authHeaders()) },
   });
   return handleResponse<{ status: string }>(res);
 }
@@ -98,6 +109,7 @@ export async function deleteRepo(repoId: number): Promise<{ status: string }> {
 export async function rotateToken(repoId: number): Promise<ConnectedRepo> {
   const res = await fetch(`${BASE_URL}/api/repos/${repoId}/rotate-token`, {
     method: "POST",
+    headers: { ...(await authHeaders()) },
   });
   return handleResponse<ConnectedRepo>(res);
 }
