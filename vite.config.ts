@@ -22,18 +22,7 @@ export default defineConfig(async ({ command, mode }) => {
     viteReact(),
   ];
 
-  if (command === "build") {
-    try {
-      const { cloudflare } = await import("@cloudflare/vite-plugin");
-      plugins.push(
-        cloudflare({
-          viteEnvironment: { name: "ssr" },
-        })
-      );
-    } catch (e) {
-      console.warn("Could not load @cloudflare/vite-plugin:", e);
-    }
-  }
+  // Cloudflare plugin removed builds a Node SSR server output
 
   // Load environment variables starting with VITE_
   const env = loadEnv(mode, process.cwd(), "VITE_");
