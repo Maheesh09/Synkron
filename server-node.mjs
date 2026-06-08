@@ -81,7 +81,14 @@ const server = createServer(async (req, res) => {
     });
 
     const response = await ssr.fetch(request, {}, {});
-    res.writeHead(response.status, Object.fromEntries(response.headers));
+    const headers = Object.fromEntries(response.headers);
+    // Never cache the SSR HTML document — otherwise the browser keeps reusing
+    // old HTML that points at asset hashes from a previous deploy (→ CSS 404).
+    const ct = headers["content-type"] || "";
+    if (ct.includes("text/html")) {
+      headers["cache-control"] = "no-cache, no-store, must-revalidate";
+    }
+    res.writeHead(response.status, headers);
     if (response.body) {
       Readable.fromWeb(response.body).pipe(res);
     } else {
