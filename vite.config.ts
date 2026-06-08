@@ -33,6 +33,20 @@ export default defineConfig(async ({ command, mode }) => {
 
   return {
     define: envDefine,
+    build: {
+      rollupOptions: {
+        output: {
+          // Give CSS a STABLE name (no content hash). The SSR server bundle and
+          // the emitted file then always agree on "/assets/styles.css", so a
+          // stale-vs-fresh build mismatch can never 404 the stylesheet again.
+          assetFileNames: (info: any) => {
+            const name = (info.names && info.names[0]) || info.name || "";
+            if (name.endsWith(".css")) return "assets/styles.css";
+            return "assets/[name]-[hash][extname]";
+          },
+        },
+      },
+    },
     resolve: {
       alias: {
         "@": path.resolve(process.cwd(), "./src"),
