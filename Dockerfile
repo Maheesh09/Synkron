@@ -4,8 +4,10 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
-# Reads VITE_API_URL from .env.production in the repo root
-RUN npm run build
+# Reads VITE_API_URL from .env.production in the repo root.
+# rm -rf dist guarantees a clean build (no stale server bundle / CSS hash
+# mismatch) and busts any cached build layer.
+RUN rm -rf dist node_modules/.vite && npm run build
 
 FROM node:20-slim AS runtime
 WORKDIR /app

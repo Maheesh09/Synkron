@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getRepos } from "@/lib/api";
+import { getFirebaseAuth } from "@/lib/firebase";
 import { SyncIcon } from "./SyncIcon";
 
 const links = [
@@ -15,14 +16,22 @@ const links = [
 
 export function Navbar({ scrolled }: { scrolled: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { pathname } = useLocation();
   const isOnApp = pathname === "/app";
 
+  useEffect(() => {
+    return getFirebaseAuth().onAuthStateChanged((user) => {
+      setIsAuthenticated(!!user);
+    });
+  }, []);
+
   const { data: repos = [] } = useQuery({
-    queryKey: ["repos"],
+    queryKey: ["repos", isAuthenticated],
     queryFn: getRepos,
     staleTime: 60000,
-    retry: false, // Don't keep retrying if API is unreachable for a new visitor
+    retry: false,
+    enabled: isAuthenticated,
   });
 
   const hasRepos = repos.length > 0;

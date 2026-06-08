@@ -47,7 +47,10 @@ async function tryServeStatic(req, res, pathname) {
     if (!s.isFile()) return false;
     res.writeHead(200, {
       "content-type": contentType(filePath),
-      "cache-control": safe.startsWith("/assets/")
+      // Stable-named files (.css) must revalidate; hashed assets are immutable.
+      "cache-control": filePath.endsWith(".css")
+        ? "no-cache, must-revalidate"
+        : safe.startsWith("/assets/")
         ? "public, max-age=31536000, immutable"
         : "public, max-age=3600",
     });
