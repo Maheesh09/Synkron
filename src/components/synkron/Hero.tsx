@@ -20,46 +20,31 @@ const logos = [
     ),
   },
   {
-    name: "GitHub",
+    name: "Gemini",
     svg: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
-      </svg>
-    ),
-  },
-  {
-    name: "Notion",
-    svg: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-        <path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z" />
-      </svg>
-    ),
-  },
-  {
-    name: "Confluence",
-    svg: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-        <path d="M.887 17.637c-.2.325-.432.75-.616 1.06-.234.4-.117.908.283 1.158l4.17 2.596c.4.25.92.133 1.175-.258.167-.267.383-.633.617-1.025 1.625-2.683 3.266-2.35 6.216-.858l4.125 2.058c.45.225.992.05 1.225-.391l2.1-4.025c.233-.441.066-.983-.375-1.225l-4.05-2.025C9.474 12.473 4.929 12.07.887 17.637zM23.113 6.363c.2-.325.433-.75.617-1.06.233-.4.116-.908-.284-1.158L19.276 1.55c-.4-.25-.92-.133-1.175.258-.167.267-.383.633-.617 1.025-1.625 2.683-3.266 2.35-6.216.858L7.143 1.633c-.45-.225-.992-.05-1.225.391L3.818 6.05c-.233.441-.066.983.375 1.225l4.05 2.025c6.283 3.229 10.828 3.63 14.87-1.937z" />
-      </svg>
-    ),
-  },
-  {
-    name: "Slack",
-    svg: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-        <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zm1.271 0a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zm0 1.271a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zm10.122 2.521a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zm-1.268 0a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zm-2.523 10.122a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zm0-1.268a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z" />
+        <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" />
       </svg>
     ),
   },
 ];
 
+const trust = ["No credit card", "Connect in under a minute", "Open source"];
 
 export function Hero() {
+  const reduce = useReducedMotion();
+
   return (
     <section className="relative min-h-screen overflow-hidden flex flex-col items-center justify-center pt-28 pb-20">
-      {/* Background canvas + radial vignette */}
+      {/* Background canvas + aurora bloom + radial vignette */}
       <div className="absolute inset-0 z-0">
         <HeroCanvas />
+
+        {/* Aurora bloom behind the headline (teal + indigo) */}
+        <div className="absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 w-[680px] h-[440px] max-w-[90vw] rounded-full aurora-teal blur-[130px] opacity-70 pointer-events-none" />
+        <div className="absolute left-[57%] top-[52%] -translate-x-1/2 -translate-y-1/2 w-[540px] h-[380px] max-w-[80vw] rounded-full aurora-indigo blur-[140px] opacity-60 pointer-events-none" />
+
+        {/* Radial vignette to fade edges into the background */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -79,7 +64,7 @@ export function Hero() {
         {/* Badge */}
         <motion.div
           variants={item}
-          className="inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-4 py-1.5 max-w-full"
+          className="inline-flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/[0.07] px-4 py-1.5 backdrop-blur-sm shadow-[0_0_24px_rgba(45,212,191,0.10)] max-w-full"
         >
           <span className="relative flex h-2 w-2 flex-shrink-0">
             <span className="absolute inset-0 rounded-full bg-emerald-400 pulse-dot" />
@@ -94,12 +79,14 @@ export function Hero() {
         {/* Headline */}
         <motion.h1
           variants={item}
-          className="font-display font-extrabold tracking-tight leading-tight sm:leading-none mt-7 text-white"
-          style={{ fontSize: "clamp(34px, 8vw, 88px)" }}
+          className="font-display font-extrabold tracking-tight leading-[1.05] sm:leading-[0.98] mt-7 text-white"
+          style={{ fontSize: "clamp(36px, 8vw, 92px)", letterSpacing: "-0.02em" }}
         >
-          Documentation
+          Push code.
           <br />
-          <span className="text-gradient">That Writes Itself.</span>
+          <span className={`${reduce ? "text-gradient" : "text-gradient-animated"} headline-glow`}>
+            Merge docs.
+          </span>
         </motion.h1>
 
         {/* Sub */}
@@ -108,7 +95,7 @@ export function Hero() {
           className="mt-6 max-w-2xl text-slate-400 text-base sm:text-lg leading-relaxed px-4 sm:px-0"
         >
           Synkron watches every commit, understands what changed, and opens a
-          merge request — so your docs never lie again.
+          merge request. So your docs never lie again.
         </motion.p>
 
         {/* CTAs */}
@@ -118,24 +105,48 @@ export function Hero() {
         >
           <motion.a
             href="#waitlist"
-            whileHover={{
-              scale: 1.04,
-              y: -2,
-              boxShadow: "0 0 40px rgba(45,212,191,0.45)",
-            }}
+            whileHover={{ scale: 1.04, y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full sm:w-auto text-center rounded-full bg-teal-400 text-[#04040A] font-semibold px-8 py-3.5 transition-colors hover:bg-teal-300"
+            className="group w-full sm:w-auto text-center rounded-full bg-gradient-to-r from-teal-400 to-teal-300 text-[#04040A] font-semibold px-8 py-3.5 shadow-[0_0_30px_rgba(45,212,191,0.35)] transition-shadow duration-300 hover:shadow-[0_0_46px_rgba(45,212,191,0.55)]"
           >
-            Start syncing free →
+            <span className="inline-flex items-center justify-center gap-2">
+              Start syncing free
+              <span className="transition-transform duration-300 group-hover:translate-x-1">
+                →
+              </span>
+            </span>
           </motion.a>
           <motion.a
             href="#how"
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full sm:w-auto text-center rounded-full border border-white/10 hover:border-white/20 text-slate-300 px-8 py-3.5 bg-white/5 backdrop-blur-sm transition-colors"
+            className="w-full sm:w-auto text-center rounded-full border border-white/[0.12] hover:border-teal-400/30 text-slate-300 hover:text-white px-8 py-3.5 bg-white/[0.04] backdrop-blur-sm transition-colors duration-300"
           >
             See how it works ↓
           </motion.a>
+        </motion.div>
+
+        {/* Trust line */}
+        <motion.div
+          variants={item}
+          className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-slate-500 text-xs sm:text-sm"
+        >
+          {trust.map((t) => (
+            <span key={t} className="inline-flex items-center gap-1.5">
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-3.5 h-3.5 text-teal-400/80 flex-shrink-0"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.1 3.1 6.8-6.8a1 1 0 0 1 1.4 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              {t}
+            </span>
+          ))}
         </motion.div>
 
         {/* Integrates with */}
@@ -159,7 +170,6 @@ export function Hero() {
           </div>
         </motion.div>
       </motion.div>
-
     </section>
   );
 }
