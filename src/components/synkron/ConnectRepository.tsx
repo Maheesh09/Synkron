@@ -106,6 +106,10 @@ function StepVerify({ onVerified, }:
         Paste your project URL. Synkron will verify access and give you the
         exact webhook settings to configure in GitLab.
       </p>
+      <div className="mt-3 text-xs text-teal-400/90 flex items-start gap-1.5">
+        <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+        <p>Note: You may need to enter this URL again during the GitLab webhook setup.</p>
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-3">
         <div className="space-y-1.5">
