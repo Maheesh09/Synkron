@@ -783,7 +783,9 @@ function AppPage() {
 
           <div className="flex items-center gap-3">
             <span className="hidden sm:inline text-[#9BA3AE] text-xs font-mono max-w-[180px] truncate">
-              {getFirebaseAuth().currentUser?.email}
+              {getFirebaseAuth().currentUser?.displayName ??
+                 getFirebaseAuth().currentUser?.email ?? 
+                 "Signed in"}
             </span>
             <button
               onClick={() => signOut(getFirebaseAuth())}
