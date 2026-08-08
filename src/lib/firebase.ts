@@ -1,5 +1,5 @@
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, type Auth } from "firebase/auth";
+import { getAuth, GithubAuthProvider, type Auth } from "firebase/auth";
 
 // ─── Firebase web config ──────────────────────────────────────────────────────
 // These values are PUBLIC and safe to commit. Get them from the Firebase console:
@@ -24,6 +24,6 @@ export function getFirebaseAuth(): Auth {
   return authInstance;
 }
 
-export const googleProvider = new GoogleAuthProvider();
+export const githubProvider = new GithubAuthProvider();
 
 // Initialize Firebase
