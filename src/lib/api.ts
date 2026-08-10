@@ -30,11 +30,14 @@ async function handleResponse<T>(res: Response): Promise<T> {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+
 export interface Repo {
   repo_id: number;
   name: string;
-  url: string;
-  last_seen: string;
+  full_name?: string;
+  owner?: string;
+  url?: string;
+  last_seen?: string;
 }
 
 export interface Run {
@@ -57,16 +60,6 @@ export interface Health {
   docs_updated: number;
 }
 
-export interface ConnectedRepo {
-  project_id: number;
-  name: string;
-  default_branch: string;
-  webhook_url: string;
-  webhook_secret: string;
-  status: string;
-}
-
-// ─── API functions ───────────────────────────────────────────────────────────
 
 /** GET /api/repos — list all connected repositories */
 export async function getRepos(): Promise<Repo[]> {
@@ -86,30 +79,3 @@ export async function getHealth(): Promise<Health> {
   return handleResponse<Health>(res);
 }
 
-/** POST /api/repos/connect — connect a new GitLab repository */
-export async function connectRepo(gitlabUrl: string): Promise<ConnectedRepo> {
-  const res = await fetch(`${BASE_URL}/api/repos/connect`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...(await authHeaders()) },
-    body: JSON.stringify({ gitlab_url: gitlabUrl }),
-  });
-  return handleResponse<ConnectedRepo>(res);
-}
-
-/** DELETE /api/repos/{repo_id} — delete a connected repository */
-export async function deleteRepo(repoId: number): Promise<{ status: string }> {
-  const res = await fetch(`${BASE_URL}/api/repos/${repoId}`, {
-    method: "DELETE",
-    headers: { ...(await authHeaders()) },
-  });
-  return handleResponse<{ status: string }>(res);
-}
-
-/** POST /api/repos/{id}/rotate-token — regenerate webhook token */
-export async function rotateToken(repoId: number): Promise<ConnectedRepo> {
-  const res = await fetch(`${BASE_URL}/api/repos/${repoId}/rotate-token`, {
-    method: "POST",
-    headers: { ...(await authHeaders()) },
-  });
-  return handleResponse<ConnectedRepo>(res);
-}

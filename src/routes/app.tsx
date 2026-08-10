@@ -3,11 +3,10 @@ import { AuthGate } from "@/components/synkron/AuthGate";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useState, useMemo, useEffect } from "react";
-import { rotateToken } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
-import { getRepos, getRuns, deleteRepo, type Repo, type Run } from "@/lib/api";
+import { getRepos, getRuns, type Repo, type Run } from "@/lib/api";
 import { ConnectRepository } from "@/components/synkron/ConnectRepository";
 import {
   AlertDialog,
@@ -55,7 +54,8 @@ const CARD = "rounded-xl border border-[#24272B] bg-[#111315]";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function ago(iso: string) {
+function ago(iso?: string) {
+  if (!iso) return "—";
   try {
     return formatDistanceToNow(new Date(iso), { addSuffix: true });
   } catch {
@@ -63,8 +63,8 @@ function ago(iso: string) {
   }
 }
 
-function isWithin24h(iso: string) {
-  return Date.now() - new Date(iso).getTime() < 86_400_000;
+function isWithin24h(iso?: string) {
+  return !!iso && Date.now() - new Date(iso).getTime() < 86_400_000;
 }
 
 // ─── Per-repo stats helper ────────────────────────────────────────────────────
@@ -103,7 +103,7 @@ const STATUS_MAP: Record<string, { pill: string; dot: string }> = {
     dot: "bg-red-400",
   },
   skipped: {
-    pill: "text-[#9BA3AE] bg-white/[0.04] border-white/10",
+    pill: "text-[#9BA3AE] bg-white/4 border-white/10",
     dot: "bg-[#4B5563]",
   },
 };
@@ -150,7 +150,7 @@ function AgentProgress({ run }: { run: Run }) {
                 transition={{ delay: i * 0.08, type: "spring", stiffness: 260, damping: 20 }}
                 className={[
                   "w-8 h-8 rounded-full border flex items-center justify-center",
-                  done ? "bg-teal-400/15 border-teal-400/40" : "bg-white/[0.03] border-[#24272B]",
+                  done ? "bg-teal-400/15 border-teal-400/40" : "bg-white/3 border-[#24272B]",
                   active ? "shadow-[0_0_12px_rgba(45,212,191,0.4)]" : "",
                 ].join(" ")}
               >
@@ -221,7 +221,7 @@ function RunDetail({ run }: { run: Run }) {
             rel="noopener noreferrer"
             className="mt-4 inline-flex items-center gap-2 rounded-lg bg-teal-400 text-[#03242a] font-semibold text-sm px-4 py-2 hover:brightness-110 transition"
           >
-            Open MR in GitLab
+            Open PR on GitHub
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         )}
@@ -253,7 +253,7 @@ function RunRow({
     <div className={`${CARD} mb-2 overflow-hidden`}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full text-left flex flex-wrap sm:flex-nowrap items-center gap-x-4 gap-y-2 px-5 py-4 hover:bg-white/[0.02] transition-colors"
+        className="w-full text-left flex flex-wrap sm:flex-nowrap items-center gap-x-4 gap-y-2 px-5 py-4 hover:bg-white/2 transition-colors"
       >
         <StatusBadge status={run.status} />
 
@@ -264,7 +264,7 @@ function RunRow({
 
         {/* Repo badge — only shown in "All" view */}
         {showRepoBadge && (
-          <span className="inline-flex items-center gap-1 rounded-md border border-[#24272B] bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-[#9BA3AE] shrink-0 hidden sm:flex">
+          <span className="hidden sm:inline-flex items-center gap-1 rounded-md border border-[#24272B] bg-white/3 px-2 py-0.5 text-[10px] font-mono text-[#9BA3AE] shrink-0">
             <GitBranch className="w-2.5 h-2.5" />
             {repoName ?? `#${run.repo_id}`}
           </span>
@@ -280,7 +280,7 @@ function RunRow({
 
         {/* Duration */}
         {run.duration_seconds != null && (
-          <span className="flex items-center gap-1 text-xs text-[#9BA3AE] shrink-0 hidden md:flex">
+          <span className="hidden md:flex items-center gap-1 text-xs text-[#9BA3AE] shrink-0">
             <Clock className="w-3 h-3" />
             {run.duration_seconds}s
           </span>
@@ -339,7 +339,7 @@ function RepoTab({
         "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-200",
         isSelected
           ? "bg-teal-400 text-[#03242a] font-semibold shadow-[0_0_14px_rgba(45,212,191,0.25)]"
-          : "bg-white/[0.04] text-[#9BA3AE] border border-[#24272B] hover:border-teal-400/30 hover:text-[#F5F7F8] hover:bg-white/[0.06]",
+          : "bg-white/4 text-[#9BA3AE] border border-[#24272B] hover:border-teal-400/30 hover:text-[#F5F7F8] hover:bg-white/6",
       ].join(" ")}
     >
       {label}
@@ -347,7 +347,7 @@ function RepoTab({
         <span
           className={[
             "px-1.5 py-0.5 rounded text-[10px] font-mono",
-            isSelected ? "bg-[#03242a]/30 text-[#03242a]" : "bg-white/[0.06] text-[#4B5563]",
+            isSelected ? "bg-[#03242a]/30 text-[#03242a]" : "bg-white/6 text-[#4B5563]",
           ].join(" ")}
         >
           {runCount}
@@ -451,18 +451,6 @@ function RepoSummaryCard({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-        <button
-          onClick={async (e) => {
-            e.stopPropagation();
-            const result = await rotateToken(repo.repo_id);
-            // Show the new token in a one-time modal
-            alert(`New webhook secret (copy now):\n\n${result.webhook_secret}\n\nUpdate this in GitLab → Settings → Webhooks.`);
-          }}
-          className="flex items-center gap-1.5 text-slate-500 hover:text-amber-400 border border-[#24272B] hover:border-amber-400/30 hover:bg-amber-400/5 px-2.5 py-1.5 rounded-lg text-xs transition-all"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Rotate token</span>
-        </button>
       </div>
 
       {/* Mini stats row */}
@@ -574,18 +562,6 @@ function RepoDetailBanner({
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          <button
-            onClick={async (e) => {
-              e.stopPropagation();
-              const result = await rotateToken(repo.repo_id);
-              // Show the new token in a one-time modal
-              alert(`New webhook secret (copy now):\n\n${result.webhook_secret}\n\nUpdate this in GitLab → Settings → Webhooks.`);
-            }}
-            className="flex items-center gap-1.5 text-slate-500 hover:text-amber-400 border border-[#24272B] hover:border-amber-400/30 hover:bg-amber-400/5 px-2.5 py-1.5 rounded-lg text-xs transition-all"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Rotate token</span>
-          </button>
         </div>
       </div>
     </div>
@@ -618,7 +594,7 @@ function StatCard({
         <span className="text-[#9BA3AE] text-xs font-mono uppercase tracking-wider">
           {label}
         </span>
-        <div className="w-7 h-7 rounded-lg bg-white/[0.04] flex items-center justify-center">
+        <div className="w-7 h-7 rounded-lg bg-white/4 flex items-center justify-center">
           <Icon className="w-3.5 h-3.5 text-[#9BA3AE]" strokeWidth={1.5} />
         </div>
       </div>
@@ -636,7 +612,7 @@ function StatCard({
 
 function Skeleton({ className = "" }: { className?: string }) {
   return (
-    <div className={`animate-pulse rounded bg-white/[0.05] ${className}`} />
+    <div className={`animate-pulse rounded bg-white/5 ${className}`} />
   );
 }
 
@@ -677,15 +653,10 @@ function AppPage() {
     refetchRuns();
   }
 
-  const handleDeleteRepo = async (id: number) => {
-    try {
-      await deleteRepo(id);
-      // If the deleted repo was selected, go back to "All"
-      if (selectedRepoId === id) setSelectedRepoId(null);
-      refetchAll();
-    } catch (e) {
-      console.error("Failed to delete repository:", e);
-    }
+  const handleDeleteRepo = async (_id: number) => {
+    // Repos are managed on GitHub now — the App still receives webhooks until
+    // the repo is removed there, so send the user to GitHub to remove it.
+    window.open("https://github.com/settings/installations", "_blank");
   };
 
   // ── Derived data ──
@@ -782,7 +753,7 @@ function AppPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="hidden sm:inline text-[#9BA3AE] text-xs font-mono max-w-[180px] truncate">
+            <span className="hidden sm:inline text-[#9BA3AE] text-xs font-mono max-w-45 truncate">
               {getFirebaseAuth().currentUser?.displayName ??
                  getFirebaseAuth().currentUser?.email ?? 
                  "Signed in"}
