@@ -405,15 +405,31 @@ function RepoSummaryCard({
           />
           <div className="min-w-0">
             <p className="text-[#F5F7F8] font-semibold text-sm truncate">{repo.name}</p>
-            <a
-              href={repo.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="text-[#4B5563] font-mono text-xs truncate block hover:text-teal-400 transition-colors"
-            >
-              {repo.url}
-            </a>
+            {repo.url ? (
+              <a
+                href={repo.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-[#4B5563] font-mono text-xs truncate block hover:text-teal-400 transition-colors"
+              >
+                {repo.url}
+              </a>
+            ) : repo.full_name ? (
+              <a
+                href={`https://github.com/${repo.full_name}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-[#4B5563] font-mono text-xs truncate block hover:text-teal-400 transition-colors"
+              >
+                github.com/{repo.full_name}
+              </a>
+            ) : (
+              <span className="text-[#4B5563] font-mono text-xs truncate block">
+                #{repo.repo_id}
+              </span>
+            )}
           </div>
         </div>
 
@@ -433,8 +449,8 @@ function RepoSummaryCard({
             <AlertDialogHeader>
               <AlertDialogTitle className="font-display">Remove this repository?</AlertDialogTitle>
               <AlertDialogDescription className="text-[#9BA3AE]">
-                "{repo.name}" will be disconnected from Synkron. Existing pipeline runs are
-                kept. You can reconnect at any time.
+                This will open GitHub App settings where you can remove "{repo.name}" from
+                Synkron. Existing pipeline runs are kept. You can reconnect at any time.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -446,7 +462,7 @@ function RepoSummaryCard({
                 disabled={isDeleting}
                 className="bg-red-500/80 hover:bg-red-500 text-white border-0"
               >
-                {isDeleting ? "Removing…" : "Yes, remove"}
+                {isDeleting ? "Opening settings…" : "Open GitHub settings"}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -515,14 +531,29 @@ function RepoDetailBanner({
                 title={fresh ? "Active in last 24h" : "No recent activity"}
               />
             </div>
-            <a
-              href={repo.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#9BA3AE] font-mono text-xs hover:text-teal-400 transition-colors truncate block"
-            >
-              {repo.url} ↗
-            </a>
+            {repo.url ? (
+              <a
+                href={repo.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#9BA3AE] font-mono text-xs hover:text-teal-400 transition-colors truncate block"
+              >
+                {repo.url} ↗
+              </a>
+            ) : repo.full_name ? (
+              <a
+                href={`https://github.com/${repo.full_name}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#9BA3AE] font-mono text-xs hover:text-teal-400 transition-colors truncate block"
+              >
+                github.com/{repo.full_name} ↗
+              </a>
+            ) : (
+              <span className="text-[#9BA3AE] font-mono text-xs truncate block">
+                Repository #{repo.repo_id}
+              </span>
+            )}
           </div>
         </div>
 
@@ -544,8 +575,8 @@ function RepoDetailBanner({
               <AlertDialogHeader>
                 <AlertDialogTitle className="font-display">Remove this repository?</AlertDialogTitle>
                 <AlertDialogDescription className="text-[#9BA3AE]">
-                  "{repo.name}" will be disconnected from Synkron. Existing pipeline runs are
-                  kept. You can reconnect at any time.
+                  This will open GitHub App settings where you can remove "{repo.name}" from
+                  Synkron. Existing pipeline runs are kept. You can reconnect at any time.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -557,7 +588,7 @@ function RepoDetailBanner({
                   disabled={isDeleting}
                   className="bg-red-500/80 hover:bg-red-500 text-white border-0"
                 >
-                  {isDeleting ? "Removing…" : "Yes, remove"}
+                  {isDeleting ? "Opening settings…" : "Open GitHub settings"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -648,15 +679,14 @@ function AppPage() {
     refetchInterval: 15_000,
   });
 
-  function refetchAll() {
-    refetchRepos();
-    refetchRuns();
+  async function refetchAll() {
+    await Promise.all([refetchRepos(), refetchRuns()]);
   }
 
   const handleDeleteRepo = async (_id: number) => {
     // Repos are managed on GitHub now — the App still receives webhooks until
     // the repo is removed there, so send the user to GitHub to remove it.
-    window.open("https://github.com/settings/installations", "_blank");
+    window.open("https://github.com/settings/installations", "_blank", "noopener,noreferrer");
   };
 
   // ── Derived data ──
@@ -686,11 +716,12 @@ function AppPage() {
   const initialLoading = reposLoading || runsLoading;
 
   // If we have 0 repos and we're not loading, trigger the initial connect flow
+  // Only set connecting state if we've finished loading and truly have no repos
   useEffect(() => {
-    if (!initialLoading && repos.length === 0 && !isConnectingInitial) {
+    if (!initialLoading && !reposLoading && repos.length === 0 && !isConnectingInitial) {
       setIsConnectingInitial(true);
     }
-  }, [initialLoading, repos.length, isConnectingInitial]);
+  }, [initialLoading, reposLoading, repos.length, isConnectingInitial]);
 
   // ── Full-screen guards ──
   if (reposError && !reposLoading) {
@@ -716,7 +747,10 @@ function AppPage() {
   if (isConnectingInitial) {
     return (
       <ConnectRepository
-        onConnected={() => { setIsConnectingInitial(false); refetchAll(); }}
+        onConnected={async () => {
+          await refetchAll();
+          setIsConnectingInitial(false);
+        }}
         onCancel={() => { window.location.href = "/"; }}
       />
     );
@@ -725,7 +759,10 @@ function AppPage() {
   if (showAddRepo) {
     return (
       <ConnectRepository
-        onConnected={() => { setShowAddRepo(false); refetchAll(); }}
+        onConnected={async () => {
+          await refetchAll();
+          setShowAddRepo(false);
+        }}
         onCancel={() => setShowAddRepo(false)}
       />
     );

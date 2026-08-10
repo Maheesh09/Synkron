@@ -1,4 +1,5 @@
-import { Github, ArrowLeft, ExternalLink } from "lucide-react";
+import { Github, ArrowLeft, ExternalLink, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 const APP_SLUG = "synkron-docs";
 const INSTALL_URL = `https://github.com/apps/${APP_SLUG}/installations/new`;
@@ -7,9 +8,20 @@ export function ConnectRepository({
   onConnected,
   onCancel,
 }: {
-  onConnected: () => void;
+  onConnected: () => void | Promise<void>;
   onCancel: () => void;
 }) {
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await onConnected();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen grid place-items-center bg-[#04040A] px-4">
       <div className="w-full max-w-md rounded-xl border border-[#24272B] bg-[#111315] p-8 text-center">
@@ -37,10 +49,18 @@ export function ConnectRepository({
         </a>
 
         <button
-          onClick={onConnected}
-          className="mt-3 w-full rounded-lg border border-[#24272B] text-[#9BA3AE] hover:text-[#F5F7F8] hover:bg-white/5 px-4 py-2.5 text-sm transition"
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+          className="mt-3 w-full rounded-lg border border-[#24272B] text-[#9BA3AE] hover:text-[#F5F7F8] hover:bg-white/5 px-4 py-2.5 text-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          I’ve installed it — refresh
+          {isRefreshing ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Refreshing...
+            </>
+          ) : (
+            "I've installed it — refresh"
+          )}
         </button>
 
         <button
