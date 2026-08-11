@@ -70,7 +70,7 @@ export function FinalCTA() {
             <span className="text-gradient">today.</span>
           </h2>
           <p className="text-slate-400 mt-5 text-base sm:text-lg leading-relaxed">
-            Connect your GitLab repositories and keep your documentation perfectly in sync.
+            Connect your GitHub repositories and keep your documentation perfectly in sync.
           </p>
         </motion.div>
 
@@ -91,7 +91,7 @@ export function FinalCTA() {
             whileTap={{ scale: 0.98 }}
             className="w-full sm:w-auto rounded-full bg-teal-400 hover:bg-teal-300 text-[#04040A] font-semibold px-8 py-3 transition-colors whitespace-nowrap"
           >
-            Connect GitLab →
+            Connect GitHub →
           </motion.a>
         </motion.div>
 

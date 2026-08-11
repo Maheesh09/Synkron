@@ -58,7 +58,7 @@ export function Footer() {
             <span className="text-white/10">·</span>
             <span className="text-slate-500">Google Cloud</span>
             <span className="text-white/10">·</span>
-            <span className="text-slate-500">GitLab MCP</span>
+            <span className="text-slate-500">GitHub MCP</span>
           </div>
         </div>
       </div>

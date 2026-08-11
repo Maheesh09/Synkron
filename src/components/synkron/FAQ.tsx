@@ -13,7 +13,7 @@ const FAQS = [
   },
   {
     q: "How does Synkron handle private repositories?",
-    a: "Synkron connects via GitLab's native API using a scoped access token you generate — the minimum-scope token needed to read diffs and open MRs. No credentials are stored beyond the token; all processing happens in your own backend.",
+    a: "Synkron connects via GitHub's native API using a scoped access token you generate — the minimum-scope token needed to read diffs and open PRs. No credentials are stored beyond the token; all processing happens in your own backend.",
   },
   {
     q: "Which doc formats are supported?",
