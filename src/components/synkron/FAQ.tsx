@@ -4,24 +4,24 @@ import { Plus } from "lucide-react";
 
 const FAQS = [
   {
-    q: "Does Synkron touch my main branch?",
-    a: "Never. Synkron opens a Merge Request against a staging or documentation branch — it never commits directly to main. You review, request changes, or close the MR exactly as you would any human-authored PR.",
+    q: "Will Synkron change my main branch?",
+    a: "No. Synkron always opens pull requests against a staging or documentation branch. You maintain complete control and review every update before it gets merged, just like any normal pull request.",
   },
   {
-    q: "What if I don't like the generated MR?",
-    a: "Just close it. The MR is a proposal, not a forced update. You can also leave a review comment and Synkron will learn from it: accepted edits improve future suggestions for your repo.",
+    q: "What happens if I don't want a pull request?",
+    a: "Simple: just close it. Pull requests from Synkron are suggestions, not mandatory updates. You can also leave review comments and Synkron learns from your feedback to make better suggestions next time.",
   },
   {
-    q: "How does Synkron handle private repositories?",
-    a: "Synkron connects via GitHub's native API using a scoped access token you generate — the minimum-scope token needed to read diffs and open PRs. No credentials are stored beyond the token; all processing happens in your own backend.",
+    q: "Is my code private and secure?",
+    a: "Yes. Synkron uses GitHub's API with scoped access tokens you create yourself. We only request the minimum permissions needed to read code changes and open pull requests. Your code stays in your repository.",
   },
   {
-    q: "Which doc formats are supported?",
-    a: "Markdown (.md), MDX, and plain text files tracked in your repo are all supported out of the box. Confluence or Notion sync is on the roadmap — add your vote in our GitHub Discussions.",
+    q: "What documentation formats work?",
+    a: "Markdown, MDX, and plain text files in your repository are supported out of the box. Support for Confluence and Notion integration is coming soon. You can vote for additional formats in our GitHub discussions.",
   },
   {
-    q: "Does this slow down my CI pipeline?",
-    a: "No. Synkron runs asynchronously via webhook — your pipeline is already done by the time Synkron starts analyzing. The MR typically appears within 45–90 seconds of a push.",
+    q: "Will this slow down my build process?",
+    a: "No. Synkron works asynchronously in the background via webhooks. Your builds finish before Synkron even starts analyzing changes. Pull requests typically appear within 45 to 90 seconds of you pushing code.",
   },
 ];
 
@@ -105,10 +105,10 @@ export function FAQ() {
               letterSpacing: "-0.02em",
             }}
           >
-            Questions we actually get.
+            Common questions answered.
           </h2>
           <p className="text-slate-400 mt-4 text-lg leading-relaxed">
-            Everything you need to know before connecting your first repo.
+            Everything you should know before setting up Synkron for your repository.
           </p>
         </motion.div>
 

@@ -8,7 +8,7 @@ const agents = [
     Icon: Binary,
     name: "Code Analyzer",
     role: "semantic analysis",
-    desc: "Reads the raw git diff and asks Gemini what the change means, not just what lines changed, but what behavior changed.",
+    desc: "Reads through the git diff and understands what the change means, not just what lines changed, but what the code now does.",
     tools: [],
   },
   {
@@ -16,7 +16,7 @@ const agents = [
     Icon: Network,
     name: "Impact Mapper",
     role: "dependency mapping",
-    desc: "Traverses your entire doc tree and scores each file for relevance. Only docs that genuinely need updating get touched.",
+    desc: "Looks at your entire documentation structure and ranks each file by relevance. Only documentation that actually needs updating gets touched.",
     tools: [],
   },
   {
@@ -24,7 +24,7 @@ const agents = [
     Icon: PenTool,
     name: "Doc Writer",
     role: "content generation",
-    desc: "Rewrites only the affected sections, never the whole file. Learns from how your team edits its drafts over time.",
+    desc: "Updates only the affected sections of documentation, never rewrites entire files. Improves suggestions over time based on your team's edits.",
     tools: [],
   },
   {
@@ -32,7 +32,7 @@ const agents = [
     Icon: GitMerge,
     name: "PR Creator",
     role: "git automation",
-    desc: "Creates a branch, commits the changes, and opens a merge request with a full human-readable explanation attached.",
+    desc: "Creates a branch, commits the changes, and opens a pull request with a complete explanation for the reviewer.",
     tools: [],
   },
 ];

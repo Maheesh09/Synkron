@@ -6,26 +6,26 @@ const steps = [
   {
     n: "01",
     Icon: GitCommitHorizontal,
-    title: "Code gets pushed",
-    desc: "A developer commits code to any branch. Synkron receives the webhook instantly via GitHub.",
+    title: "You push code",
+    desc: "Whenever a developer commits code to any branch, GitHub notifies Synkron instantly through a webhook.",
   },
   {
     n: "02",
     Icon: ScanSearch,
-    title: "Synkron reads the diff",
-    desc: "The Code Analyzer agent reads the raw diff and uses Gemini to understand what actually changed semantically.",
+    title: "Synkron analyzes the changes",
+    desc: "The system reads through the code diff and understands what actually changed and why using semantic analysis.",
   },
   {
     n: "03",
     Icon: BrainCircuit,
-    title: "4 agents go to work",
-    desc: "A sequential pipeline maps affected docs, rewrites impacted sections, and prepares the changes.",
+    title: "Documentation gets prepared",
+    desc: "Multiple processing steps identify affected docs, rewrite impacted sections, and prepare all the changes for you.",
   },
   {
     n: "04",
     Icon: GitPullRequest,
     title: "A pull request appears",
-    desc: "Synkron opens a real GitHub PR with updated docs, full context, and an explanation for the reviewer.",
+    desc: "Synkron opens a real GitHub PR with complete updated documentation, full context, and an explanation for your review.",
   },
 ];
 
@@ -118,7 +118,7 @@ export function HowItWorks() {
               letterSpacing: "-0.02em",
             }}
           >
-            From commit to docs{" "}
+            From commit to updated docs{" "}
             <span className="text-gradient">in seconds.</span>
           </h2>
         </motion.div>

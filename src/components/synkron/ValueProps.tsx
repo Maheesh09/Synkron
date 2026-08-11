@@ -4,18 +4,18 @@ import { Zap, ShieldCheck, Clock } from "lucide-react";
 const features = [
   {
     icon: Zap,
-    title: "Zero Configuration",
-    description: "No complex setup or pipelines to write. Just connect your GitHub webhook and let Synkron handle the rest.",
+    title: "No Complicated Setup",
+    description: "Connect your GitHub repository in seconds. Synkron runs in the background and gets to work immediately.",
   },
   {
     icon: ShieldCheck,
-    title: "Always Accurate",
-    description: "Documentation is updated in the same Merge Request as the code. It literally cannot drift out of sync.",
+    title: "Always Accurate and Current",
+    description: "Documentation updates happen in the same pull request as the code. They cannot fall out of sync with reality.",
   },
   {
     icon: Clock,
-    title: "Save Hours of Time",
-    description: "Engineers spend 20% of their time writing docs. Synkron gives that time back for shipping features.",
+    title: "Free Up Your Team's Time",
+    description: "Developers spend hours on documentation every week. Synkron reclaims that time so your team can build better features.",
   },
 ];
 

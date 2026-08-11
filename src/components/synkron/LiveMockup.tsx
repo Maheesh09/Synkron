@@ -43,9 +43,9 @@ function Stats() {
   return (
     <div ref={ref} className="mt-10 flex flex-wrap justify-center gap-3">
       {[
-        `⚡ 18s average pipeline`,
+        `⚡ 18 second average`,
         `📄 2 docs updated`,
-        `✓ MR opened`,
+        `✓ PR opened`,
       ].map((c) => (
         <motion.span
           key={c}
@@ -87,8 +87,8 @@ export function LiveMockup() {
               letterSpacing: "-0.02em",
             }}
           >
-            Watch a merge request{" "}
-            <span className="text-gradient">get born.</span>
+            See a pull request{" "}
+            <span className="text-gradient">in action.</span>
           </h2>
         </motion.div>
 
