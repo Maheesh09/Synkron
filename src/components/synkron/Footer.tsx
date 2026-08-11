@@ -49,7 +49,7 @@ export function Footer() {
 
         <div className="mt-10 pt-8 border-t border-white/[0.05] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <p className="text-slate-600 text-sm">
-            © 2026 Synkron. Built by developers.
+            © 2026 Synkron. Built by <a href="https://maheesh.me" className="text-teal-400 hover:text-teal-300 transition-colors">Maheesh</a>.
           </p>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-slate-600 text-xs font-mono">
             <span>Powered by</span>
