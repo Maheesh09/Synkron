@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Scissors, CheckCircle2, Sparkles } from "lucide-react";
+import { Scissors, CheckCircle2, Sparkles, Github } from "lucide-react";
 
 function Card({
   children,
@@ -62,22 +62,19 @@ export function BentoFeatures() {
           <Card className="lg:col-span-7 p-8 relative" delay={0}>
             <div className="absolute inset-0 dot-grid opacity-50 pointer-events-none" />
             <div className="relative">
-              {/* GitLab icon */}
               <div className="w-14 h-14 rounded-2xl bg-teal-400/10 border border-teal-400/20 flex items-center justify-center">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7 text-teal-400">
-                  <path d="M22.65 14.39L12 22.13 1.35 14.39a.84.84 0 0 1-.3-.94l1.22-3.78 2.44-7.51A.42.42 0 0 1 4.82 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.49h8.1l2.44-7.51A.42.42 0 0 1 18.6 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.51L23 13.45a.84.84 0 0 1-.35.94z" />
-                </svg>
+                <Github className="w-7 h-7 text-teal-400" />
               </div>
               <h3 className="font-display text-white text-2xl mt-5 font-semibold">
-                GitLab MCP Native
+                GitHub MCP Native
               </h3>
               <p className="text-slate-400 mt-2 max-w-md leading-relaxed">
-                Synkron speaks GitLab fluently through the Model Context Protocol
+                Synkron speaks GitHub fluently through the Model Context Protocol
                 — no glue code, no brittle scraping.
               </p>
               <div className="mt-6 rounded-xl border border-white/[0.07] bg-[#06060F] p-4 font-mono text-[11px] overflow-x-auto">
                 <span className="text-slate-500">POST </span>
-                <span className="text-teal-300">/webhook/gitlab</span>
+                <span className="text-teal-300">/webhook/github</span>
                 {"\n"}
                 <span className="text-slate-600">{"{"}</span>
                 <br />

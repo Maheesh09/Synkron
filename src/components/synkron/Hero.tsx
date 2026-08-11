@@ -12,10 +12,10 @@ const item = {
 
 const logos = [
   {
-    name: "GitLab",
+    name: "GitHub",
     svg: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-        <path d="M22.65 14.39L12 22.13 1.35 14.39a.84.84 0 0 1-.3-.94l1.22-3.78 2.44-7.51A.42.42 0 0 1 4.82 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.49h8.1l2.44-7.51A.42.42 0 0 1 18.6 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.51L23 13.45a.84.84 0 0 1-.35.94z" />
+        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.263.82-.583 0-.287-.01-1.046-.015-2.053-3.338.725-4.042-1.61-4.042-1.61-.546-1.387-1.332-1.757-1.332-1.757-1.088-.744.083-.729.083-.729 1.205.085 1.84 1.237 1.84 1.237 1.07 1.835 2.809 1.305 3.494.998.108-.775.418-1.305.76-1.605-2.665-.305-5.466-1.333-5.466-5.93 0-1.31.47-2.38 1.235-3.22-.124-.304-.535-1.525.117-3.176 0 0 1.008-.322 3.3 1.23.957-.266 1.98-.399 3-.405 1.02.006 2.043.139 3 .405 2.29-1.552 3.296-1.23 3.296-1.23.653 1.651.242 2.872.118 3.176.77.84 1.233 1.91 1.233 3.22 0 4.61-2.804 5.625-5.475 5.92.43.372.813 1.102.813 2.222 0 1.605-.015 2.898-.015 3.293 0 .322.216.699.825.58C20.565 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z" />
       </svg>
     ),
   },
@@ -71,8 +71,8 @@ export function Hero() {
             <span className="relative rounded-full bg-emerald-400 h-2 w-2" />
           </span>
           <span className="text-teal-300 text-[10px] sm:text-xs font-mono uppercase tracking-widest text-center">
-            <span className="inline sm:hidden">AI-powered · GitLab Native</span>
-            <span className="hidden sm:inline">AI-powered · GitLab Native · Zero workflow change</span>
+            <span className="inline sm:hidden">AI-powered · GitHub Native</span>
+            <span className="hidden sm:inline">AI-powered · GitHub Native · Zero workflow change</span>
           </span>
         </motion.div>
 

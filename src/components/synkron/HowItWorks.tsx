@@ -7,7 +7,7 @@ const steps = [
     n: "01",
     Icon: GitCommitHorizontal,
     title: "Code gets pushed",
-    desc: "A developer commits code to any branch. Synkron receives the webhook instantly via GitLab.",
+    desc: "A developer commits code to any branch. Synkron receives the webhook instantly via GitHub.",
   },
   {
     n: "02",
@@ -24,8 +24,8 @@ const steps = [
   {
     n: "04",
     Icon: GitPullRequest,
-    title: "A merge request appears",
-    desc: "Synkron opens a real GitLab MR with updated docs, full context, and an explanation for the reviewer.",
+    title: "A pull request appears",
+    desc: "Synkron opens a real GitHub PR with updated docs, full context, and an explanation for the reviewer.",
   },
 ];
 

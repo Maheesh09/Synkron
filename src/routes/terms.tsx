@@ -54,9 +54,9 @@ function TermsPage() {
 
           <Section title="1. The Service">
             <p>
-              Synkron is an automated documentation tool that connects to GitLab
+              Synkron is an automated documentation tool that connects to GitHub
               repositories, analyzes code changes, and proposes documentation
-              updates as merge requests for your review. Synkron does not merge
+              updates as pull requests for your review. Synkron does not merge
               changes on your behalf. A human always decides whether to merge any
               proposed change.
             </p>
@@ -94,7 +94,7 @@ function TermsPage() {
                 to the Service or its infrastructure.
               </li>
               <li>
-                Use the Service in any way that violates GitLab's terms or any
+                Use the Service in any way that violates GitHub's terms or any
                 applicable law.
               </li>
             </ul>
@@ -113,7 +113,7 @@ function TermsPage() {
 
           <Section title="6. Third-Party Services">
             <p>
-              The Service integrates with third-party platforms including GitLab,
+              The Service integrates with third-party platforms including GitHub,
               Google Cloud, Firebase, and the Google Gemini API. Your use of
               those platforms is governed by their own terms. We are not
               responsible for the availability, accuracy, or conduct of

@@ -55,17 +55,17 @@ function PrivacyPage() {
           <Section title="1. Who We Are">
             <p>
               Synkron is an automated documentation tool that connects to your
-              GitLab repositories, analyzes code changes, and proposes
-              documentation updates as merge requests for your review.
+              GitHub repositories, analyzes code changes, and proposes
+              documentation updates as pull requests for your review.
             </p>
           </Section>
 
           <Section title="2. Information We Collect">
             <p>
               <strong className="text-white">Account information.</strong> When
-              you sign in with Google through Firebase Authentication, we receive
+              you sign in with GitHub through Firebase Authentication, we receive
               your name, email address, and profile identifier. We never receive
-              or store your Google password.
+              or store your GitHub password.
             </p>
             <p>
               <strong className="text-white">Repository access credentials.</strong>{" "}
@@ -135,7 +135,7 @@ function PrivacyPage() {
               <li>Firebase Authentication (sign-in)</li>
               <li>Google Gemini API (AI processing)</li>
               <li>MongoDB Atlas (database storage)</li>
-              <li>GitLab (repository integration)</li>
+              <li>GitHub (repository integration)</li>
             </ul>
           </Section>
 

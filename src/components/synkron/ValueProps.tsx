@@ -5,7 +5,7 @@ const features = [
   {
     icon: Zap,
     title: "Zero Configuration",
-    description: "No complex setup or pipelines to write. Just connect your GitLab webhook and let Synkron handle the rest.",
+    description: "No complex setup or pipelines to write. Just connect your GitHub webhook and let Synkron handle the rest.",
   },
   {
     icon: ShieldCheck,
