@@ -4,13 +4,13 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 import path from "path";
+import {nitro} from "nitro/vite";
 
 export default defineConfig(async ({ command, mode }) => {
   const plugins = [
     tailwindcss(),
     tsConfigPaths({ projects: ["./tsconfig.json"] }),
     tanstackStart({
-      server: { entry: "server" },
       importProtection: {
         behavior: "error",
         client: {
@@ -19,6 +19,7 @@ export default defineConfig(async ({ command, mode }) => {
         },
       },
     }),
+    nitro(),
     viteReact(),
   ];
 
