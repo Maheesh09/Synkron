@@ -10,6 +10,11 @@ import {
 
 import appCss from "../styles.css?url";
 
+/**
+ * Renders a 404 Not Found page when a route doesn't exist.
+ * Displays a user-friendly error message with a link to return home.
+ * @returns {JSX.Element} The 404 error component
+ */
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -32,6 +37,14 @@ function NotFoundComponent() {
   );
 }
 
+/**
+ * Renders an error page when an unexpected error occurs during route rendering.
+ * Logs the error and provides options to retry or return home.
+ * @param {Object} props - Component props
+ * @param {Error} props.error - The error object that occurred
+ * @param {Function} props.reset - Function to reset the error boundary
+ * @returns {JSX.Element} The error component with retry and home navigation options
+ */
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
@@ -126,6 +139,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+/**
+ * Root shell component that wraps the entire application.
+ * Sets up the HTML document structure, metadata, Schema.org markup, and Tailwind CSS.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to render
+ * @returns {JSX.Element} The HTML shell with head metadata and body content
+ */
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -233,6 +253,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+/**
+ * Root component that provides React Query context and renders the router outlet.
+ * Wraps all child routes with QueryClientProvider for API request management.
+ * @returns {JSX.Element} The root layout with query client context
+ */
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
