@@ -21,8 +21,7 @@ export function Footer() {
           </Link>
 
           <p className="text-slate-500 text-sm max-w-xs leading-relaxed hidden md:block">
-            AI documentation that stays in sync with every commit. Built for
-            teams that ship.
+            Documentation that stays in sync with your code. Built by developers, for developers.
           </p>
 
           <ul className="flex items-center gap-7 text-sm">
@@ -50,7 +49,7 @@ export function Footer() {
 
         <div className="mt-10 pt-8 border-t border-white/[0.05] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <p className="text-slate-600 text-sm">
-            © 2026 Synkron. Built for developers who ship.
+            © 2026 Synkron. Built by developers.
           </p>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-slate-600 text-xs font-mono">
             <span>Powered by</span>
@@ -58,7 +57,7 @@ export function Footer() {
             <span className="text-white/10">·</span>
             <span className="text-slate-500">Google Cloud</span>
             <span className="text-white/10">·</span>
-            <span className="text-slate-500">GitHub MCP</span>
+            <span className="text-slate-500">GitHub API</span>
           </div>
         </div>
       </div>

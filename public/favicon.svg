@@ -1,3 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2DD4BF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Sync circular arrow icon -->
+  <!-- Top right arrow -->
+  <path d="M140 60 L140 30 L170 30" stroke="#14B8A6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Top right to bottom right curve -->
+  <path d="M155 45 Q180 80 155 155" stroke="#14B8A6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Bottom right arrow -->
+  <path d="M140 140 L140 170 L170 170" stroke="#14B8A6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Bottom left to top left curve -->
+  <path d="M45 155 Q20 120 45 45" stroke="#14B8A6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Bottom left arrow -->
+  <path d="M60 140 L60 170 L30 170" stroke="#14B8A6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Top left to bottom right curve (completing the sync) -->
+  <path d="M45 45 Q20 80 45 155" stroke="#14B8A6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 </svg>

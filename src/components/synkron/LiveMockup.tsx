@@ -42,22 +42,20 @@ function Stats() {
   const inView = useInView(ref, { once: true, margin: "-50px" });
   return (
     <div ref={ref} className="mt-10 flex flex-wrap justify-center gap-3">
-      {[
-        `⚡ 18s average pipeline`,
-        `📄 2 docs updated`,
-        `✓ MR opened`,
-      ].map((c) => (
-        <motion.span
-          key={c}
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="rounded-full bg-white/5 border border-white/[0.08] px-5 py-2 text-slate-300 text-sm"
-        >
-          {c}
-        </motion.span>
-      ))}
+      {[`⚡ 18 seconds from code push to PR creation`, `📄 2 docs updated`, `✓ PR opened`].map(
+        (c) => (
+          <motion.span
+            key={c}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="rounded-full bg-white/5 border border-white/[0.08] px-5 py-2 text-slate-300 text-sm"
+          >
+            {c}
+          </motion.span>
+        ),
+      )}
     </div>
   );
 }
@@ -76,9 +74,7 @@ export function LiveMockup() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">
-            Real output
-          </p>
+          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">Real output</p>
           <h2
             className="font-display font-bold text-white mt-3"
             style={{
@@ -87,8 +83,7 @@ export function LiveMockup() {
               letterSpacing: "-0.02em",
             }}
           >
-            Watch a merge request{" "}
-            <span className="text-gradient">get born.</span>
+            See a pull request <span className="text-gradient">in action.</span>
           </h2>
         </motion.div>
 
@@ -109,9 +104,7 @@ export function LiveMockup() {
                   <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
                   <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
                   <span className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
-                  <span className="ml-3 font-mono text-xs text-slate-500">
-                    auth/middleware.py
-                  </span>
+                  <span className="ml-3 font-mono text-xs text-slate-500">auth/middleware.py</span>
                 </div>
                 <pre className="font-mono text-[10px] sm:text-xs leading-5 sm:leading-6 p-3 sm:p-4 overflow-x-auto">
                   {diff.map((l, i) => (
@@ -128,8 +121,8 @@ export function LiveMockup() {
                         l.type === "del"
                           ? "bg-red-400/10 text-red-300/90 border-l-2 border-red-500/50 pl-2"
                           : l.type === "add"
-                          ? "bg-teal-400/10 text-teal-200/90 border-l-2 border-teal-500/50 pl-2"
-                          : "text-slate-500 pl-2 border-l-2 border-transparent"
+                            ? "bg-teal-400/10 text-teal-200/90 border-l-2 border-teal-500/50 pl-2"
+                            : "text-slate-500 pl-2 border-l-2 border-transparent"
                       }
                     >
                       <span className="select-none mr-3 text-slate-600 w-3 inline-block">
@@ -162,9 +155,7 @@ export function LiveMockup() {
                   <span className="rounded bg-green-500/20 text-green-400 text-[10px] font-mono px-2 py-0.5 border border-green-500/30">
                     !42
                   </span>
-                  <span className="text-white text-sm font-medium">
-                    Documentation update
-                  </span>
+                  <span className="text-white text-sm font-medium">Documentation update</span>
                 </div>
 
                 <div className="px-5 py-4 flex items-center gap-3 border-b border-white/[0.06]">
@@ -185,13 +176,11 @@ export function LiveMockup() {
                       </span>
                       <span className="block">
                         Access tokens now expire after{" "}
-                        <span className="text-teal-300">15 minutes</span> instead
-                        of 24 hours.
+                        <span className="text-teal-300">15 minutes</span> instead of 24 hours.
                       </span>
                       <span className="block">
-                        A new{" "}
-                        <span className="text-teal-300">refresh token</span> is
-                        issued at login, valid for 7 days.
+                        A new <span className="text-teal-300">refresh token</span> is issued at
+                        login, valid for 7 days.
                       </span>
                       <span className="block text-slate-600 mt-2">
                         — Synkron updated 2 sections referencing JWT expiry.

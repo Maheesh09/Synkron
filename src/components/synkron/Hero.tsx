@@ -29,7 +29,7 @@ const logos = [
   },
 ];
 
-const trust = ["No credit card", "Connect in under a minute", "Open source"];
+const trust = ["Free to start", "One click setup", "Open source"];
 
 export function Hero() {
   const reduce = useReducedMotion();
@@ -48,8 +48,7 @@ export function Hero() {
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background:
-              "radial-gradient(ellipse 80% 60% at 50% 40%, transparent 0%, #04040A 75%)",
+            background: "radial-gradient(ellipse 80% 60% at 50% 40%, transparent 0%, #04040A 75%)",
           }}
         />
       </div>
@@ -71,8 +70,10 @@ export function Hero() {
             <span className="relative rounded-full bg-emerald-400 h-2 w-2" />
           </span>
           <span className="text-teal-300 text-[10px] sm:text-xs font-mono uppercase tracking-widest text-center">
-            <span className="inline sm:hidden">AI-powered · GitHub Native</span>
-            <span className="hidden sm:inline">AI-powered · GitHub Native · Zero workflow change</span>
+            <span className="inline sm:hidden">Intelligent · GitHub Native</span>
+            <span className="hidden sm:inline">
+              Intelligent · GitHub Native · No workflow changes
+            </span>
           </span>
         </motion.div>
 
@@ -82,10 +83,10 @@ export function Hero() {
           className="font-display font-extrabold tracking-tight leading-[1.05] sm:leading-[0.98] mt-7 text-white"
           style={{ fontSize: "clamp(36px, 8vw, 92px)", letterSpacing: "-0.02em" }}
         >
-          Push code.
+          Code changes.
           <br />
           <span className={`${reduce ? "text-gradient" : "text-gradient-animated"} headline-glow`}>
-            Merge docs.
+            Docs update.
           </span>
         </motion.h1>
 
@@ -94,8 +95,8 @@ export function Hero() {
           variants={item}
           className="mt-6 max-w-2xl text-slate-400 text-base sm:text-lg leading-relaxed px-4 sm:px-0"
         >
-          Synkron watches every commit, understands what changed, and opens a
-          merge request. So your docs never lie again.
+          Your documentation stays perfectly in sync with every commit. No manual updates. No
+          confusion. Just code and docs working together as they should.
         </motion.p>
 
         {/* CTAs */}
@@ -110,10 +111,8 @@ export function Hero() {
             className="group w-full sm:w-auto text-center rounded-full bg-gradient-to-r from-teal-400 to-teal-300 text-[#04040A] font-semibold px-8 py-3.5 shadow-[0_0_30px_rgba(45,212,191,0.35)] transition-shadow duration-300 hover:shadow-[0_0_46px_rgba(45,212,191,0.55)]"
           >
             <span className="inline-flex items-center justify-center gap-2">
-              Start syncing free
-              <span className="transition-transform duration-300 group-hover:translate-x-1">
-                →
-              </span>
+              Start free today
+              <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
             </span>
           </motion.a>
           <motion.a
@@ -150,10 +149,7 @@ export function Hero() {
         </motion.div>
 
         {/* Integrates with */}
-        <motion.div
-          variants={item}
-          className="mt-12 flex flex-col items-center gap-4 w-full"
-        >
+        <motion.div variants={item} className="mt-12 flex flex-col items-center gap-4 w-full">
           <p className="text-slate-600 font-mono text-xs uppercase tracking-widest">
             Integrates with
           </p>

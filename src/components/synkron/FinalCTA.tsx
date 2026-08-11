@@ -65,12 +65,12 @@ export function FinalCTA() {
               letterSpacing: "-0.03em",
             }}
           >
-            Start syncing
+            Get started today
             <br />
-            <span className="text-gradient">today.</span>
+            <span className="text-gradient">for free.</span>
           </h2>
           <p className="text-slate-400 mt-5 text-base sm:text-lg leading-relaxed">
-            Connect your GitHub repositories and keep your documentation perfectly in sync.
+            Connect your GitHub repository and let Synkron keep your documentation always current.
           </p>
         </motion.div>
 
@@ -101,7 +101,7 @@ export function FinalCTA() {
           transition={{ delay: 0.5, duration: 0.6 }}
           className="mt-8 text-slate-600 text-sm font-mono"
         >
-          Already syncing: {repoCount.toLocaleString()} repositories
+          Already in use: {repoCount.toLocaleString()} repositories
         </motion.p>
       </div>
     </section>

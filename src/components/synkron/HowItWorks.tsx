@@ -6,26 +6,26 @@ const steps = [
   {
     n: "01",
     Icon: GitCommitHorizontal,
-    title: "Code gets pushed",
-    desc: "A developer commits code to any branch. Synkron receives the webhook instantly via GitHub.",
+    title: "You push code",
+    desc: "Whenever a developer commits code to any branch, GitHub notifies Synkron instantly through a webhook.",
   },
   {
     n: "02",
     Icon: ScanSearch,
-    title: "Synkron reads the diff",
-    desc: "The Code Analyzer agent reads the raw diff and uses Gemini to understand what actually changed semantically.",
+    title: "Synkron analyzes the changes",
+    desc: "The system reads through the code diff and understands what actually changed and why using semantic analysis.",
   },
   {
     n: "03",
     Icon: BrainCircuit,
-    title: "4 agents go to work",
-    desc: "A sequential pipeline maps affected docs, rewrites impacted sections, and prepares the changes.",
+    title: "Documentation gets prepared",
+    desc: "Multiple processing steps identify affected docs, rewrite impacted sections, and prepare all the changes for you.",
   },
   {
     n: "04",
     Icon: GitPullRequest,
     title: "A pull request appears",
-    desc: "Synkron opens a real GitHub PR with updated docs, full context, and an explanation for the reviewer.",
+    desc: "Synkron opens a real GitHub PR with complete updated documentation, full context, and an explanation for your review.",
   },
 ];
 
@@ -62,8 +62,12 @@ function StepCard({ s, i }: { s: (typeof steps)[number]; i: number }) {
         </div>
 
         {/* Hover glow */}
-        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse 60% 50% at 30% 30%, rgba(45,212,191,0.04), transparent)" }}
+        <div
+          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 50% at 30% 30%, rgba(45,212,191,0.04), transparent)",
+          }}
         />
 
         <div className="relative">
@@ -107,9 +111,7 @@ export function HowItWorks() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">
-            How it works
-          </p>
+          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">How it works</p>
           <h2
             className="font-display font-bold text-white mt-3"
             style={{
@@ -118,8 +120,7 @@ export function HowItWorks() {
               letterSpacing: "-0.02em",
             }}
           >
-            From commit to docs{" "}
-            <span className="text-gradient">in seconds.</span>
+            From commit to updated docs <span className="text-gradient">in seconds.</span>
           </h2>
         </motion.div>
 
