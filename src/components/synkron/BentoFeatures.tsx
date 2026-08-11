@@ -42,9 +42,7 @@ export function BentoFeatures() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">
-            Why Synkron
-          </p>
+          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">Why Synkron</p>
           <h2
             className="font-display font-bold text-white mt-3"
             style={{
@@ -69,7 +67,8 @@ export function BentoFeatures() {
                 Native GitHub Integration
               </h3>
               <p className="text-slate-400 mt-2 max-w-md leading-relaxed">
-                Synkron integrates directly with GitHub through the Model Context Protocol. No extra libraries or complicated setup.
+                Synkron integrates directly with GitHub through the Model Context Protocol. No extra
+                libraries or complicated setup.
               </p>
               <div className="mt-6 rounded-xl border border-white/[0.07] bg-[#06060F] p-4 font-mono text-[11px] overflow-x-auto">
                 <span className="text-slate-500">POST </span>
@@ -105,7 +104,8 @@ export function BentoFeatures() {
               Improves with your feedback
             </h3>
             <p className="text-slate-400 mt-2 leading-relaxed">
-              Every pull request you accept, edit, or close teaches Synkron to get better. The writing style matches your team's voice over time.
+              Every pull request you accept, edit, or close teaches Synkron to get better. The
+              writing style matches your team's voice over time.
             </p>
             <div className="relative mt-8 aspect-square max-w-[260px] mx-auto">
               <svg viewBox="0 0 200 200" className="w-full h-full">
@@ -182,11 +182,10 @@ export function BentoFeatures() {
             <div className="w-11 h-11 rounded-xl bg-teal-400/10 border border-teal-400/15 flex items-center justify-center">
               <Scissors className="w-5 h-5 text-teal-400" strokeWidth={1.75} />
             </div>
-            <h3 className="font-display text-white text-xl mt-4 font-semibold">
-              Precise updates
-            </h3>
+            <h3 className="font-display text-white text-xl mt-4 font-semibold">Precise updates</h3>
             <p className="text-slate-400 text-sm mt-2 leading-relaxed">
-              Only the sections that reference changed code get updated. Exactly what changed, nothing more.
+              Only the sections that reference changed code get updated. Exactly what changed,
+              nothing more.
             </p>
           </Card>
 
@@ -198,7 +197,8 @@ export function BentoFeatures() {
               No workflow changes
             </h3>
             <p className="text-slate-400 text-sm mt-2 leading-relaxed">
-              No new tools to learn. Pull requests are how your team already reviews code, so that's how Synkron works too.
+              No new tools to learn. Pull requests are how your team already reviews code, so that's
+              how Synkron works too.
             </p>
           </Card>
 
@@ -210,7 +210,8 @@ export function BentoFeatures() {
               Powered by Google Gemini
             </h3>
             <p className="text-slate-400 text-sm mt-2 leading-relaxed">
-              Built on Google's latest language model to understand code changes and write accurate documentation updates.
+              Built on Google's latest language model to understand code changes and write accurate
+              documentation updates.
             </p>
           </Card>
         </div>

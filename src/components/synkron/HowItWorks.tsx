@@ -62,8 +62,12 @@ function StepCard({ s, i }: { s: (typeof steps)[number]; i: number }) {
         </div>
 
         {/* Hover glow */}
-        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse 60% 50% at 30% 30%, rgba(45,212,191,0.04), transparent)" }}
+        <div
+          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 50% at 30% 30%, rgba(45,212,191,0.04), transparent)",
+          }}
         />
 
         <div className="relative">
@@ -107,9 +111,7 @@ export function HowItWorks() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">
-            How it works
-          </p>
+          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">How it works</p>
           <h2
             className="font-display font-bold text-white mt-3"
             style={{
@@ -118,8 +120,7 @@ export function HowItWorks() {
               letterSpacing: "-0.02em",
             }}
           >
-            From commit to updated docs{" "}
-            <span className="text-gradient">in seconds.</span>
+            From commit to updated docs <span className="text-gradient">in seconds.</span>
           </h2>
         </motion.div>
 

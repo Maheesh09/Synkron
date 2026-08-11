@@ -35,11 +35,11 @@ export function DashboardPreview() {
               letterSpacing: "-0.02em",
             }}
           >
-            Monitor your documentation{" "}
-            <span className="text-gradient">in one place.</span>
+            Monitor your documentation <span className="text-gradient">in one place.</span>
           </h2>
           <p className="text-slate-400 text-lg leading-relaxed mt-5">
-            See which repositories need updates, review pull request history, and watch Synkron improve over time as you provide feedback.
+            See which repositories need updates, review pull request history, and watch Synkron
+            improve over time as you provide feedback.
           </p>
           <ul className="mt-7 space-y-3">
             {bullets.map((t, i) => (
@@ -83,11 +83,7 @@ export function DashboardPreview() {
             style={{ transformStyle: "preserve-3d" }}
             className="rounded-3xl border border-white/[0.08] bg-[#0D0D1C] shadow-[0_40px_120px_-30px_rgba(45,212,191,0.15)] overflow-hidden flex"
           >
-            <img
-              src="/ss.png"
-              alt="Synkron Dashboard"
-              className="w-full h-auto object-cover"
-            />
+            <img src="/ss.png" alt="Synkron Dashboard" className="w-full h-auto object-cover" />
           </motion.div>
         </motion.div>
       </div>

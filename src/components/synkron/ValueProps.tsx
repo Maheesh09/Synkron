@@ -5,17 +5,20 @@ const features = [
   {
     icon: Zap,
     title: "No Complicated Setup",
-    description: "Connect your GitHub repository in seconds. Synkron runs in the background and gets to work immediately.",
+    description:
+      "Connect your GitHub repository in seconds. Synkron runs in the background and gets to work immediately.",
   },
   {
     icon: ShieldCheck,
     title: "Always Accurate and Current",
-    description: "Documentation updates happen in the same pull request as the code. They cannot fall out of sync with reality.",
+    description:
+      "Documentation updates happen in the same pull request as the code. They cannot fall out of sync with reality.",
   },
   {
     icon: Clock,
     title: "Free Up Your Team's Time",
-    description: "Developers spend hours on documentation every week. Synkron reclaims that time so your team can build better features.",
+    description:
+      "Developers spend hours on documentation every week. Synkron reclaims that time so your team can build better features.",
   },
 ];
 
@@ -40,9 +43,7 @@ export function ValueProps() {
               <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3 tracking-tight">
                 {feature.title}
               </h3>
-              <p className="text-slate-400 leading-relaxed text-sm">
-                {feature.description}
-              </p>
+              <p className="text-slate-400 leading-relaxed text-sm">{feature.description}</p>
             </motion.div>
           ))}
         </div>

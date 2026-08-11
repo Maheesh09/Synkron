@@ -13,7 +13,7 @@ const FAQS = [
   },
   {
     q: "Is my code private and secure?",
-    a: "Yes. Synkron uses GitHub's API with scoped access tokens you create yourself. We only request the minimum permissions needed to read code changes and open pull requests. Your code stays in your repository.",
+    a: "Yes. Synkron uses Firebase for authentication and GitHub App installation tokens with minimal permissions: metadata: read, contents: write, and pull_requests: write. Your code stays in your repository and is never stored externally.",
   },
   {
     q: "What documentation formats work?",

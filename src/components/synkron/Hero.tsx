@@ -48,8 +48,7 @@ export function Hero() {
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background:
-              "radial-gradient(ellipse 80% 60% at 50% 40%, transparent 0%, #04040A 75%)",
+            background: "radial-gradient(ellipse 80% 60% at 50% 40%, transparent 0%, #04040A 75%)",
           }}
         />
       </div>
@@ -72,7 +71,9 @@ export function Hero() {
           </span>
           <span className="text-teal-300 text-[10px] sm:text-xs font-mono uppercase tracking-widest text-center">
             <span className="inline sm:hidden">Intelligent · GitHub Native</span>
-            <span className="hidden sm:inline">Intelligent · GitHub Native · No workflow changes</span>
+            <span className="hidden sm:inline">
+              Intelligent · GitHub Native · No workflow changes
+            </span>
           </span>
         </motion.div>
 
@@ -94,7 +95,8 @@ export function Hero() {
           variants={item}
           className="mt-6 max-w-2xl text-slate-400 text-base sm:text-lg leading-relaxed px-4 sm:px-0"
         >
-          Your documentation stays perfectly in sync with every commit. No manual updates. No confusion. Just code and docs working together as they should.
+          Your documentation stays perfectly in sync with every commit. No manual updates. No
+          confusion. Just code and docs working together as they should.
         </motion.p>
 
         {/* CTAs */}
@@ -110,9 +112,7 @@ export function Hero() {
           >
             <span className="inline-flex items-center justify-center gap-2">
               Start free today
-              <span className="transition-transform duration-300 group-hover:translate-x-1">
-                →
-              </span>
+              <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
             </span>
           </motion.a>
           <motion.a
@@ -149,10 +149,7 @@ export function Hero() {
         </motion.div>
 
         {/* Integrates with */}
-        <motion.div
-          variants={item}
-          className="mt-12 flex flex-col items-center gap-4 w-full"
-        >
+        <motion.div variants={item} className="mt-12 flex flex-col items-center gap-4 w-full">
           <p className="text-slate-600 font-mono text-xs uppercase tracking-widest">
             Integrates with
           </p>
