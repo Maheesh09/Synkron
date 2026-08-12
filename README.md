@@ -1,12 +1,7 @@
-# Synkron — Frontend
+# Synkron - Frontend
 
-> Push code. Merge docs.
 
 This repository is the frontend for Synkron: a server-side rendered web application that serves both the public marketing site and the authenticated dashboard where developers connect their GitLab repositories and watch the documentation pipeline in action.
-
-Built for the [Google Cloud Rapid Agent Hackathon](https://rapid-agent.devpost.com) — GitLab track.
-
-The backend service lives at [Maheesh09/synkron-backend](https://github.com/Maheesh09/synkron-backend).
 
 ---
 
