@@ -1,19 +1,14 @@
-# Synkron - Frontend
+# Synkron Frontend
 
-
-This repository is the frontend for Synkron: a server-side rendered web application that serves both the public marketing site and the authenticated dashboard where developers connect their GitLab repositories and watch the documentation pipeline in action.
-
----
+This repository is the frontend for Synkron, a server side rendered web app that serves both the public marketing site and the authenticated dashboard where developers install the Synkron GitHub App and watch the documentation pipeline work across their repositories.
 
 ## What Is in Here
 
-The frontend has two distinct surfaces that share the same codebase:
+The frontend has two surfaces that share one codebase.
 
-**The landing page** (`/`) explains what Synkron does, shows an animated live mockup of the pipeline, and invites developers to sign in. It is publicly accessible with no authentication required.
+**The landing page** (`/`) explains what Synkron does, shows an animated mockup of the pipeline, and invites developers to sign in. It is public, with no authentication required.
 
-**The dashboard** (`/app`) is the working interface. After signing in with Google, a developer can connect a GitLab repository, see incoming pipeline runs in real time, inspect which commits triggered a documentation update, and review the merge requests Synkron opened. Access is scoped per user: you only see the repositories you connected.
-
----
+**The dashboard** (`/app`) is the working interface. After signing in with GitHub, a developer can install the Synkron GitHub App on their repositories, watch pipeline runs come in, see which commits triggered a documentation update, and open the pull requests Synkron created. Everything is scoped to you, so you only see your own repositories.
 
 ## Tech Stack
 
@@ -26,20 +21,16 @@ The frontend has two distinct surfaces that share the same codebase:
 | Component primitives | Radix UI |
 | Animations | Framer Motion |
 | 3D scene | Three.js via React Three Fiber |
-| Authentication | Firebase Authentication (Google sign-in) |
+| Authentication | Firebase Authentication (GitHub sign-in) |
 | Data fetching | TanStack Query |
-| Hosting | Google Cloud Run (Node.js SSR) |
-
----
+| Build and hosting | Vercel via Nitro |
 
 ## Prerequisites
 
-* Node.js 20 or newer
-* npm
-* The Synkron backend running locally or deployed — you will need its URL for `VITE_API_URL`
-* A Firebase project with Google sign-in enabled
-
----
+* Node.js 20 or newer, and npm
+* The Synkron backend running locally or deployed, since you need its URL for `VITE_API_URL`
+* A Firebase project with GitHub enabled as a sign-in provider
+* A GitHub OAuth App whose client ID and secret are wired into that Firebase provider, which is what brokers "Sign in with GitHub"
 
 ## Local Development
 
@@ -70,60 +61,36 @@ Set `VITE_API_URL` to the base URL of your running backend (see Environment Vari
 npm run dev
 ```
 
-The app is available at `http://localhost:3000` by default.
+The app is available at the printed local URL, `http://localhost:3000` by default.
 
 **5. Set up Firebase**
 
-Open `src/lib/firebase.ts` and replace the `firebaseConfig` object with the values from your own Firebase project:
+Open `src/lib/firebase.ts` and replace the `firebaseConfig` object with the values from your own Firebase project (Project settings, General, Your apps, SDK setup and configuration, Config).
 
-```
-Project settings → General → Your apps → SDK setup and configuration → Config
-```
-
-In the Firebase console, enable Google as a sign-in provider under Authentication, then add `localhost` to the list of authorised domains.
-
----
+In the Firebase console under Authentication, enable **GitHub** as a sign-in provider and paste in the client ID and secret from your GitHub OAuth App. Add `localhost` to the list of authorised domains so sign-in works during development.
 
 ## Environment Variables
 
 | Variable | Required | Description |
 |---|---|---|
-| `VITE_API_URL` | Yes | Base URL of the Synkron backend, without a trailing slash. Example: `https://your-backend.run.app` |
+| `VITE_API_URL` | Yes | Base URL of the Synkron backend, with no trailing slash. Example: `https://your-backend.run.app` |
 
-The Firebase configuration lives directly in `src/lib/firebase.ts`. Firebase web API keys are public by design and safe to commit. If you want to restrict which domains can use your key, add HTTP referrer restrictions in the Google Cloud Console under APIs and Services.
+The Firebase configuration lives directly in `src/lib/firebase.ts`. Firebase web API keys are public by design and safe to commit. If you restrict the key with HTTP referrer rules in the Google Cloud Console, remember to add every domain you deploy to, or sign-in will fail with a 403.
 
----
+## Deploying to Vercel
 
-## Deploying to Cloud Run
+The app builds through Nitro, which Vercel detects automatically, so there is no build command or output directory to configure.
 
-The app builds to a standard Node.js SSR bundle served by `server-node.mjs`. No Cloudflare or edge runtime required.
+**1. Import the repository into Vercel** and let it detect the framework.
 
-**1. Set the backend URL for production**
+**2. Set the environment variable.** Add `VITE_API_URL` in the Vercel project settings, pointing at your deployed backend. It is baked into the client bundle at build time, so set it before the first build.
 
-Create a `.env.production` file at the project root:
+**3. Authorise the Vercel domain in Firebase and Google Cloud.** Two allowlists matter, and sign-in fails without both.
 
-```
-VITE_API_URL=https://your-backend-url.run.app
-```
+* Firebase console, Authentication, Settings, Authorised domains. Add your `vercel.app` domain, otherwise you get `auth/unauthorized-domain`.
+* If your Firebase API key has HTTP referrer restrictions in the Google Cloud Console, add the same domain there too, otherwise the sign-in call returns a 403 from `identitytoolkit`.
 
-This value is baked into the client bundle at build time.
-
-**2. Add your production domain to Firebase**
-
-In the Firebase console, go to Authentication → Settings → Authorised domains and add your Cloud Run service URL. Without this step, Google sign-in will fail with an `auth/unauthorized-domain` error.
-
-**3. Deploy**
-
-```bash
-gcloud run deploy synkron-frontend \
-  --source . \
-  --region YOUR_REGION \
-  --allow-unauthenticated
-```
-
-Cloud Build runs the Docker build in the cloud. The Dockerfile installs dependencies, runs `npm run build` to produce the SSR bundle, and starts the Node.js server. The service scales to zero between requests.
-
----
+Every push to your main branch then ships a fresh deploy.
 
 ## Project Layout
 
@@ -131,68 +98,47 @@ Cloud Build runs the Docker build in the cloud. The Dockerfile installs dependen
 src/
   routes/
     index.tsx              Landing page (/)
-    app.tsx                Dashboard (/app) — wrapped in AuthGate
+    app.tsx                Dashboard (/app), wrapped in AuthGate
     __root.tsx             Root layout and global providers
   components/
     synkron/               Application-specific components
-      Hero.tsx             Landing page hero section
+      Hero.tsx             Landing page hero
       HowItWorks.tsx       Animated pipeline walkthrough
-      DashboardPreview.tsx  Preview of the dashboard on the landing page
+      DashboardPreview.tsx Dashboard preview on the landing page
       BentoFeatures.tsx    Feature grid
       AgentPipeline.tsx    Live agent pipeline visualisation
-      ConnectRepository.tsx  Repository connection form (dashboard)
-      AuthGate.tsx         Wraps the dashboard; redirects unsigned users to sign in
+      ConnectRepository.tsx  "Install on GitHub" onboarding screen
+      AuthGate.tsx         Wraps the dashboard, prompts unsigned users to sign in
       Navbar.tsx           Top navigation
       Footer.tsx           Footer
       FAQ.tsx              Frequently asked questions
       ...                  Additional landing page sections
-    ui/                    Radix UI based component primitives (shadcn)
+    ui/                    Radix based component primitives (shadcn)
   lib/
-    api.ts                 Typed API client — attaches Firebase ID token to every request
-    firebase.ts            Firebase initialisation (lazy, SSR-safe)
+    api.ts                 Typed API client, attaches the Firebase ID token to every request
+    firebase.ts            Firebase initialisation (lazy, SSR safe) with the GitHub provider
     utils.ts               Shared utilities
-  hooks/
-    use-mobile.tsx         Responsive breakpoint hook
-    useMouseTilt.ts        Mouse tilt effect for cards
+  hooks/                   Responsive and interaction hooks
   styles.css               Global styles (Tailwind entry point)
-server-node.mjs            Node.js SSR request handler and static file server
-vite.config.ts             Vite configuration (TanStack Start, Tailwind, stable CSS naming)
-Dockerfile                 Multistage Docker build for Cloud Run
+vite.config.ts             Vite config (TanStack Start, Nitro, Tailwind)
 ```
-
----
 
 ## Authentication Flow
 
-Sign-in uses Firebase Authentication with Google as the provider.
+Sign-in uses Firebase Authentication with GitHub as the provider.
 
-1. The user clicks Sign in on the landing page or is redirected from `/app`.
-2. `AuthGate` checks for a current Firebase user. If none exists, it renders the sign-in prompt.
-3. After a successful Google sign-in, Firebase issues an ID token.
-4. Every API call to the backend attaches this token as a `Bearer` header via `authHeaders()` in `api.ts`.
-5. The backend verifies the token against Firebase and scopes all data to the authenticated user.
-
----
-
-## Cache Strategy
-
-The server sets response headers to ensure browsers and proxies never serve stale content:
-
-* HTML responses: `no-cache, no-store, must-revalidate` — always re-fetched.
-* CSS (`/assets/styles.css`): `no-cache, must-revalidate` — always revalidated. The filename is stable across builds to prevent server and client bundle mismatches.
-* Hashed JS assets (`/assets/*.js`): `public, max-age=31536000, immutable` — cached permanently, since the hash changes whenever the content changes.
-
----
+1. The user clicks Sign in on the landing page, or is redirected from `/app`.
+2. `AuthGate` checks for a current Firebase user. If none exists, it shows the sign-in prompt.
+3. After a successful GitHub sign-in, Firebase issues an ID token that carries the user's GitHub identity.
+4. Every API call attaches this token as a `Bearer` header via `authHeaders()` in `api.ts`.
+5. The backend verifies the token and scopes all data to that GitHub account, so a user only ever sees the repositories their installation covers.
 
 ## Related
 
-* [synkron-backend](https://github.com/Maheesh09/synkron-backend) — FastAPI backend, ADK agent, and GitLab MCP integration
-* [Google ADK](https://github.com/google/adk-python) — Agent Development Kit used to build the documentation agent
-* [@zereight/mcp-gitlab](https://www.npmjs.com/package/@zereight/mcp-gitlab) — GitLab MCP server that gives the agent its GitLab superpowers
-* [TanStack Start](https://tanstack.com/start/latest) — SSR framework
-
----
+* [synkron-backend](https://github.com/Maheesh09/synkron-backend), the FastAPI backend, the GitHub App, and the four agent documentation pipeline on Gemini
+* [TanStack Start](https://tanstack.com/start/latest), the SSR framework
+* [Nitro](https://nitro.build), the server toolkit that builds the app for Vercel
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).
