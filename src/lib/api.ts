@@ -40,6 +40,13 @@ export interface Repo {
   last_seen?: string;
 }
 
+export interface StageTimings {
+  code_analyzer?: number;
+  impact_mapper?: number;
+  doc_writer?: number;
+  pr_creator?: number;
+}
+
 export interface Run {
   run_id: string;
   repo_id: number;
@@ -49,6 +56,14 @@ export interface Run {
   docs_updated: string[];
   created_at: string;
   duration_seconds: number;
+  skip_reason?: string | null;
+  error_type?: string | null;
+  error_message?: string | null;
+  stage_ms?: StageTimings;
+  tokens_total?: number;
+  cost_usd?: number;
+  gemini_calls?: number;
+  merged_at?: string | null;
 }
 
 export interface Health {
@@ -58,6 +73,10 @@ export interface Health {
   success_rate: number;
   avg_duration: number;
   docs_updated: number;
+  p50_duration: number;
+  p95_duration: number;
+  total_cost_usd: number;
+  total_tokens: number;
 }
 
 

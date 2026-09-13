@@ -69,22 +69,43 @@ function isWithin24h(iso?: string) {
 
 // ─── Per-repo stats helper ────────────────────────────────────────────────────
 
+function percentile(sorted: number[], pct: number) {
+  if (!sorted.length) return null;
+  const idx = Math.min(Math.floor((sorted.length * pct) / 100), sorted.length - 1);
+  return Math.round(sorted[idx] * 10) / 10;
+}
+
 function computeStats(runs: Run[]) {
   const total = runs.length;
   const completed = runs.filter((r) => r.status === "completed").length;
   const failed = runs.filter((r) => r.status === "failed").length;
+
   const durations = runs
     .filter((r) => r.status === "completed" && r.duration_seconds != null)
-    .map((r) => r.duration_seconds);
-  const avgDuration =
-    durations.length
-      ? Math.round((durations.reduce((a, b) => a + b, 0) / durations.length) * 10) / 10
-      : null;
+    .map((r) => r.duration_seconds)
+    .sort((a, b) => a - b);
+
+  const avgDuration = durations.length
+    ? Math.round((durations.reduce((a, b) => a + b, 0) / durations.length) * 10) / 10
+    : null;
+  const p50Duration = percentile(durations, 50);
+  const p95Duration = percentile(durations, 95);
+
   const docsUpdated = runs.reduce((s, r) => s + (r.docs_updated?.length ?? 0), 0);
+
   // Only count completed vs failed — skipped runs are not meaningful for success rate
   const decisiveRuns = completed + failed;
   const successRate = decisiveRuns > 0 ? Math.round((completed / decisiveRuns) * 1000) / 10 : 0;
-  return { total, completed, failed, successRate, avgDuration, docsUpdated };
+
+  const totalCost = runs.reduce((s, r) => s + (r.cost_usd ?? 0), 0);
+  const totalTokens = runs.reduce((s, r) => s + (r.tokens_total ?? 0), 0);
+  const costPerRun = completed > 0 ? totalCost / completed : 0;
+
+  return {
+    total, completed, failed, successRate,
+    avgDuration, p50Duration, p95Duration,
+    docsUpdated, totalCost, totalTokens, costPerRun,
+  };
 }
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
@@ -184,6 +205,50 @@ function AgentProgress({ run }: { run: Run }) {
 
 // ─── Run detail panel ─────────────────────────────────────────────────────────
 
+const SKIP_COPY: Record<string, string> = {
+  no_doc_hints: "Filtered before any model call — the diff touched no documented behaviour.",
+  no_affected_docs: "Analysed, but no existing doc covers the changed code.",
+  no_doc_updates: "Docs were reviewed and already accurate — nothing to rewrite.",
+};
+
+const STAGE_LABELS: Record<string, string> = {
+  code_analyzer: "Code Analyzer",
+  impact_mapper: "Impact Mapper",
+  doc_writer: "Doc Writer",
+  pr_creator: "PR Creator",
+};
+
+function StageBars({ stages }: { stages: Record<string, number | undefined> }) {
+  const entries = Object.entries(stages).filter(([, ms]) => ms != null) as [string, number][];
+  const total = entries.reduce((s, [, ms]) => s + ms, 0) || 1;
+
+  return (
+    <div className="space-y-2">
+      {entries.map(([key, ms]) => {
+        const pct = (ms / total) * 100;
+        return (
+          <div key={key} className="flex items-center gap-3">
+            <span className="w-28 shrink-0 text-xs text-[#9BA3AE]">
+              {STAGE_LABELS[key] ?? key}
+            </span>
+            <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${pct}%` }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="h-full rounded-full bg-teal-400/70"
+              />
+            </div>
+            <span className="w-24 shrink-0 text-right text-xs font-mono text-[#4B5563]">
+              {(ms / 1000).toFixed(1)}s · {pct.toFixed(0)}%
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function RunDetail({ run }: { run: Run }) {
   return (
     <motion.div
@@ -202,16 +267,28 @@ function RunDetail({ run }: { run: Run }) {
           <AgentProgress run={run} />
         </div>
 
-        {run.status === "skipped" && (
+                {run.status === "skipped" && (
           <p className="italic text-[#9BA3AE] text-sm">
-            No docs needed updating — the diff didn't touch documented sections.
+            {SKIP_COPY[run.skip_reason ?? ""] ??
+              "No docs needed updating — the diff didn't touch documented sections."}
           </p>
         )}
         {run.status === "failed" && (
           <p className="text-red-400 text-sm flex items-center gap-1.5">
             <XCircle className="w-4 h-4 shrink-0" />
-            Pipeline failed — check backend logs for details.
+            {run.error_type ? `${run.error_type} — check backend logs.` : "Pipeline failed — check backend logs for details."}
           </p>
+        )}
+
+        {run.stage_ms && Object.keys(run.stage_ms).length > 0 && (
+          <div className="mt-5">
+            <p className="text-[#9BA3AE] text-xs font-mono mb-2 uppercase tracking-wider">
+              Stage timings
+            </p>
+            <StageBars
+              stages={run.stage_ms as unknown as Record<string, number | undefined>}
+            />
+          </div>
         )}
 
         {run.mr_url && (
@@ -226,10 +303,13 @@ function RunDetail({ run }: { run: Run }) {
           </a>
         )}
 
-        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-xs font-mono text-[#4B5563]">
+          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-xs font-mono text-[#4B5563]">
           <span>run&nbsp;{run.run_id.slice(0, 12)}</span>
           {run.commit_sha && <span>commit&nbsp;{run.commit_sha.slice(0, 8)}</span>}
           {run.duration_seconds != null && <span>{run.duration_seconds}s total</span>}
+          {run.tokens_total ? <span>{run.tokens_total.toLocaleString()} tokens</span> : null}
+          {run.cost_usd ? <span>${run.cost_usd.toFixed(5)}</span> : null}
+          {run.gemini_calls ? <span>{run.gemini_calls} model calls</span> : null}
         </div>
       </div>
     </motion.div>
@@ -879,15 +959,21 @@ function AppPage() {
                     />
                     <StatCard
                       icon={Clock}
-                      label="Avg pipeline"
-                      value={repoStats.avgDuration != null ? `${repoStats.avgDuration}s` : "—"}
+                      label="p50 pipeline"
+                      value={repoStats.p50Duration != null ? `${repoStats.p50Duration}s` : "—"}
                       delay={0.12}
+                    />
+                    <StatCard
+                      icon={Clock}
+                      label="p95 pipeline"
+                      value={repoStats.p95Duration != null ? `${repoStats.p95Duration}s` : "—"}
+                      delay={0.18}
                     />
                     <StatCard
                       icon={FileText}
                       label="Docs updated"
                       value={repoStats.docsUpdated}
-                      delay={0.18}
+                      delay={0.24}
                     />
                   </>
                 )}
