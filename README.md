@@ -4,7 +4,7 @@ This repository is the frontend for Synkron, a server side rendered web app that
 
 ## What Is in Here
 
-The frontend has two surfaces that share one codebase.
+The frontend has Two surfaces that share one codebase.
 
 **The landing page** (`/`) explains what Synkron does, shows an animated mockup of the pipeline, and invites developers to sign in. It is public, with no authentication required.
 
