@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
@@ -37,15 +38,7 @@ function NotFoundComponent() {
   );
 }
 
-/**
- * Renders an error page when an unexpected error occurs during route rendering.
- * Logs the error and provides options to retry or return home.
- * @param {Object} props - Component props
- * @param {Error} props.error - The error object that occurred
- * @param {Function} props.reset - Function to reset the error boundary
- * @returns {JSX.Element} The error component with retry and home navigation options
- */
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
 

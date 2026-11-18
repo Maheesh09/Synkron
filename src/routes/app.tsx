@@ -6,7 +6,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
-import { getRepos, getRuns, type Repo, type Run } from "@/lib/api";
+import { getRepos, getRuns, getHealth, deleteRepo, type Health, type Repo, type Run } from "@/lib/api";
 import { ConnectRepository } from "@/components/synkron/ConnectRepository";
 import {
   AlertDialog,
@@ -105,6 +105,26 @@ function computeStats(runs: Run[]) {
     total, completed, failed, successRate,
     avgDuration, p50Duration, p95Duration,
     docsUpdated, totalCost, totalTokens, costPerRun,
+  };
+}
+
+type Stats = ReturnType<typeof computeStats>;
+
+/**
+ * Stats over ALL runs from /api/health. Returns null (so callers fall back to
+ * computeStats on the loaded page) until a backend that reports failed_runs
+ * answers: older backends count skipped runs in success_rate and ignore the
+ * repo_id filter, so their numbers would not match this dashboard.
+ */
+function statsFromHealth(h: Health | undefined): Stats | null {
+  if (!h || h.failed_runs === undefined) return null;
+  return {
+    total: h.total_runs,
+    completed: h.completed_runs,
+    failed: h.failed_runs,
+    successRate: h.success_rate,
+    avgDuration: h.completed_runs > 0 ? h.avg_duration : null,
+    docsUpdated: h.docs_updated,
   };
 }
 
@@ -759,8 +779,26 @@ function AppPage() {
     refetchInterval: 15_000,
   });
 
-  async function refetchAll() {
-    await Promise.all([refetchRepos(), refetchRuns()]);
+  // Aggregate stats over ALL runs come from the backend; runs[] above is only
+  // the latest page and is used for the run list itself.
+  const { data: health, refetch: refetchHealth } = useQuery({
+    queryKey: ["health"],
+    queryFn: () => getHealth(),
+    refetchInterval: 15_000,
+  });
+
+  const { data: repoHealth, refetch: refetchRepoHealth } = useQuery({
+    queryKey: ["health", selectedRepoId],
+    queryFn: () => getHealth(selectedRepoId),
+    enabled: selectedRepoId != null,
+    refetchInterval: 15_000,
+  });
+
+  function refetchAll() {
+    refetchRepos();
+    refetchRuns();
+    refetchHealth();
+    if (selectedRepoId != null) refetchRepoHealth();
   }
 
   const handleDeleteRepo = async (_id: number) => {
@@ -780,7 +818,10 @@ function AppPage() {
     [runs, selectedRepoId]
   );
 
-  const repoStats = useMemo(() => computeStats(filteredRuns), [filteredRuns]);
+  const repoStats = useMemo(
+    () => statsFromHealth(repoHealth) ?? computeStats(filteredRuns),
+    [repoHealth, filteredRuns]
+  );
 
   const runCountByRepo = useMemo(() => {
     const m: Record<number, number> = {};
@@ -788,10 +829,13 @@ function AppPage() {
     return m;
   }, [runs]);
 
-  // ── Global stats — same formula as per-repo, applied to all runs ──
-  // This guarantees consistent numbers across every view: skipped runs are
-  // excluded from the success-rate denominator everywhere.
-  const globalStats = useMemo(() => computeStats(runs), [runs]);
+  // ── Global stats — from /api/health (all runs), same formula as per-repo ──
+  // Skipped runs are excluded from the success-rate denominator everywhere.
+  // Falls back to the loaded page of runs while /api/health loads or fails.
+  const globalStats = useMemo(
+    () => statsFromHealth(health) ?? computeStats(runs),
+    [health, runs]
+  );
 
   const initialLoading = reposLoading || runsLoading;
 
@@ -1022,7 +1066,7 @@ function AppPage() {
               transition={{ duration: 0.25 }}
               className="space-y-8"
             >
-              {/* Global stats — computed from runs[], same formula as per-repo view */}
+              {/* Global stats — all runs via /api/health, same formula as per-repo view */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {initialLoading ? (
                   [...Array(4)].map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)
