@@ -77,6 +77,8 @@ export interface Health {
   docs_updated: number;
   p50_duration?: number;
   p95_duration?: number;
+  total_cost?: number;
+  total_tokens?: number;
 }
 
 

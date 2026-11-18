@@ -6,7 +6,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
-import { getRepos, getRuns, getHealth, deleteRepo, type Health, type Repo, type Run } from "@/lib/api";
+import { getRepos, getRuns, getHealth, type Health, type Repo, type Run } from "@/lib/api";
 import { ConnectRepository } from "@/components/synkron/ConnectRepository";
 import {
   AlertDialog,
@@ -124,7 +124,12 @@ function statsFromHealth(h: Health | undefined): Stats | null {
     failed: h.failed_runs,
     successRate: h.success_rate,
     avgDuration: h.completed_runs > 0 ? h.avg_duration : null,
+    p50Duration: h.completed_runs > 0 ? h.p50_duration ?? null : null,
+    p95Duration: h.completed_runs > 0 ? h.p95_duration ?? null : null,
     docsUpdated: h.docs_updated,
+    totalCost: h.total_cost ?? 0,
+    totalTokens: h.total_tokens ?? 0,
+    costPerRun: h.completed_runs > 0 ? (h.total_cost ?? 0) / h.completed_runs : 0,
   };
 }
 
