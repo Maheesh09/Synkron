@@ -52,9 +52,13 @@ export interface Health {
   total_runs: number;
   completed_runs: number;
   skipped_runs: number;
+  /** Present on backends that compute success_rate as completed / (completed + failed). */
+  failed_runs?: number;
   success_rate: number;
   avg_duration: number;
   docs_updated: number;
+  p50_duration?: number;
+  p95_duration?: number;
 }
 
 export interface ConnectedRepo {
@@ -80,9 +84,10 @@ export async function getRuns(limit = 20): Promise<Run[]> {
   return handleResponse<Run[]>(res);
 }
 
-/** GET /api/health — aggregate health stats */
-export async function getHealth(): Promise<Health> {
-  const res = await fetch(`${BASE_URL}/api/health`, { headers: { ...(await authHeaders()) } });
+/** GET /api/health — aggregate stats over all runs, optionally for one repo */
+export async function getHealth(repoId?: number | null): Promise<Health> {
+  const qs = repoId != null ? `?repo_id=${repoId}` : "";
+  const res = await fetch(`${BASE_URL}/api/health${qs}`, { headers: { ...(await authHeaders()) } });
   return handleResponse<Health>(res);
 }
 
