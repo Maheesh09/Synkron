@@ -2,6 +2,24 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
+import { securityHeaders } from "../security-headers";
+
+// Same policy as the Vercel routing config, applied at runtime so any other
+// host (Node server, Cloud Run, nitro preview) sends it on SSR responses too.
+const SECURITY_HEADERS = Object.entries(securityHeaders(import.meta.env.VITE_API_URL));
+
+function withSecurityHeaders(response: Response): Response {
+  // Responses from fetch() can have immutable headers; copy into a new Response.
+  const headers = new Headers(response.headers);
+  for (const [name, value] of SECURITY_HEADERS) {
+    if (!headers.has(name)) headers.set(name, value);
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -71,10 +89,10 @@ export default {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      return withSecurityHeaders(await normalizeCatastrophicSsrResponse(response));
     } catch (error) {
       console.error(error);
-      return brandedErrorResponse();
+      return withSecurityHeaders(brandedErrorResponse());
     }
   },
 };

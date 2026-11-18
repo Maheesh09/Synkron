@@ -3,7 +3,6 @@ import { AuthGate } from "@/components/synkron/AuthGate";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useState, useMemo, useEffect } from "react";
-import { rotateToken } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
@@ -55,7 +54,8 @@ const CARD = "rounded-xl border border-[#24272B] bg-[#111315]";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function ago(iso: string) {
+function ago(iso?: string) {
+  if (!iso) return "—";
   try {
     return formatDistanceToNow(new Date(iso), { addSuffix: true });
   } catch {
@@ -63,28 +63,49 @@ function ago(iso: string) {
   }
 }
 
-function isWithin24h(iso: string) {
-  return Date.now() - new Date(iso).getTime() < 86_400_000;
+function isWithin24h(iso?: string) {
+  return !!iso && Date.now() - new Date(iso).getTime() < 86_400_000;
 }
 
 // ─── Per-repo stats helper ────────────────────────────────────────────────────
+
+function percentile(sorted: number[], pct: number) {
+  if (!sorted.length) return null;
+  const idx = Math.min(Math.floor((sorted.length * pct) / 100), sorted.length - 1);
+  return Math.round(sorted[idx] * 10) / 10;
+}
 
 function computeStats(runs: Run[]) {
   const total = runs.length;
   const completed = runs.filter((r) => r.status === "completed").length;
   const failed = runs.filter((r) => r.status === "failed").length;
+
   const durations = runs
     .filter((r) => r.status === "completed" && r.duration_seconds != null)
-    .map((r) => r.duration_seconds);
-  const avgDuration =
-    durations.length
-      ? Math.round((durations.reduce((a, b) => a + b, 0) / durations.length) * 10) / 10
-      : null;
+    .map((r) => r.duration_seconds)
+    .sort((a, b) => a - b);
+
+  const avgDuration = durations.length
+    ? Math.round((durations.reduce((a, b) => a + b, 0) / durations.length) * 10) / 10
+    : null;
+  const p50Duration = percentile(durations, 50);
+  const p95Duration = percentile(durations, 95);
+
   const docsUpdated = runs.reduce((s, r) => s + (r.docs_updated?.length ?? 0), 0);
+
   // Only count completed vs failed — skipped runs are not meaningful for success rate
   const decisiveRuns = completed + failed;
   const successRate = decisiveRuns > 0 ? Math.round((completed / decisiveRuns) * 1000) / 10 : 0;
-  return { total, completed, failed, successRate, avgDuration, docsUpdated };
+
+  const totalCost = runs.reduce((s, r) => s + (r.cost_usd ?? 0), 0);
+  const totalTokens = runs.reduce((s, r) => s + (r.tokens_total ?? 0), 0);
+  const costPerRun = completed > 0 ? totalCost / completed : 0;
+
+  return {
+    total, completed, failed, successRate,
+    avgDuration, p50Duration, p95Duration,
+    docsUpdated, totalCost, totalTokens, costPerRun,
+  };
 }
 
 type Stats = ReturnType<typeof computeStats>;
@@ -123,7 +144,7 @@ const STATUS_MAP: Record<string, { pill: string; dot: string }> = {
     dot: "bg-red-400",
   },
   skipped: {
-    pill: "text-[#9BA3AE] bg-white/[0.04] border-white/10",
+    pill: "text-[#9BA3AE] bg-white/4 border-white/10",
     dot: "bg-[#4B5563]",
   },
 };
@@ -170,7 +191,7 @@ function AgentProgress({ run }: { run: Run }) {
                 transition={{ delay: i * 0.08, type: "spring", stiffness: 260, damping: 20 }}
                 className={[
                   "w-8 h-8 rounded-full border flex items-center justify-center",
-                  done ? "bg-teal-400/15 border-teal-400/40" : "bg-white/[0.03] border-[#24272B]",
+                  done ? "bg-teal-400/15 border-teal-400/40" : "bg-white/3 border-[#24272B]",
                   active ? "shadow-[0_0_12px_rgba(45,212,191,0.4)]" : "",
                 ].join(" ")}
               >
@@ -204,6 +225,50 @@ function AgentProgress({ run }: { run: Run }) {
 
 // ─── Run detail panel ─────────────────────────────────────────────────────────
 
+const SKIP_COPY: Record<string, string> = {
+  no_doc_hints: "Filtered before any model call — the diff touched no documented behaviour.",
+  no_affected_docs: "Analysed, but no existing doc covers the changed code.",
+  no_doc_updates: "Docs were reviewed and already accurate — nothing to rewrite.",
+};
+
+const STAGE_LABELS: Record<string, string> = {
+  code_analyzer: "Code Analyzer",
+  impact_mapper: "Impact Mapper",
+  doc_writer: "Doc Writer",
+  pr_creator: "PR Creator",
+};
+
+function StageBars({ stages }: { stages: Record<string, number | undefined> }) {
+  const entries = Object.entries(stages).filter(([, ms]) => ms != null) as [string, number][];
+  const total = entries.reduce((s, [, ms]) => s + ms, 0) || 1;
+
+  return (
+    <div className="space-y-2">
+      {entries.map(([key, ms]) => {
+        const pct = (ms / total) * 100;
+        return (
+          <div key={key} className="flex items-center gap-3">
+            <span className="w-28 shrink-0 text-xs text-[#9BA3AE]">
+              {STAGE_LABELS[key] ?? key}
+            </span>
+            <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${pct}%` }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="h-full rounded-full bg-teal-400/70"
+              />
+            </div>
+            <span className="w-24 shrink-0 text-right text-xs font-mono text-[#4B5563]">
+              {(ms / 1000).toFixed(1)}s · {pct.toFixed(0)}%
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function RunDetail({ run }: { run: Run }) {
   return (
     <motion.div
@@ -222,16 +287,28 @@ function RunDetail({ run }: { run: Run }) {
           <AgentProgress run={run} />
         </div>
 
-        {run.status === "skipped" && (
+                {run.status === "skipped" && (
           <p className="italic text-[#9BA3AE] text-sm">
-            No docs needed updating — the diff didn't touch documented sections.
+            {SKIP_COPY[run.skip_reason ?? ""] ??
+              "No docs needed updating — the diff didn't touch documented sections."}
           </p>
         )}
         {run.status === "failed" && (
           <p className="text-red-400 text-sm flex items-center gap-1.5">
             <XCircle className="w-4 h-4 shrink-0" />
-            Pipeline failed — check backend logs for details.
+            {run.error_type ? `${run.error_type} — check backend logs.` : "Pipeline failed — check backend logs for details."}
           </p>
+        )}
+
+        {run.stage_ms && Object.keys(run.stage_ms).length > 0 && (
+          <div className="mt-5">
+            <p className="text-[#9BA3AE] text-xs font-mono mb-2 uppercase tracking-wider">
+              Stage timings
+            </p>
+            <StageBars
+              stages={run.stage_ms as unknown as Record<string, number | undefined>}
+            />
+          </div>
         )}
 
         {run.mr_url && (
@@ -241,15 +318,18 @@ function RunDetail({ run }: { run: Run }) {
             rel="noopener noreferrer"
             className="mt-4 inline-flex items-center gap-2 rounded-lg bg-teal-400 text-[#03242a] font-semibold text-sm px-4 py-2 hover:brightness-110 transition"
           >
-            Open MR in GitLab
+            Open PR on GitHub
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         )}
 
-        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-xs font-mono text-[#4B5563]">
+          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-xs font-mono text-[#4B5563]">
           <span>run&nbsp;{run.run_id.slice(0, 12)}</span>
           {run.commit_sha && <span>commit&nbsp;{run.commit_sha.slice(0, 8)}</span>}
           {run.duration_seconds != null && <span>{run.duration_seconds}s total</span>}
+          {run.tokens_total ? <span>{run.tokens_total.toLocaleString()} tokens</span> : null}
+          {run.cost_usd ? <span>${run.cost_usd.toFixed(5)}</span> : null}
+          {run.gemini_calls ? <span>{run.gemini_calls} model calls</span> : null}
         </div>
       </div>
     </motion.div>
@@ -273,7 +353,7 @@ function RunRow({
     <div className={`${CARD} mb-2 overflow-hidden`}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full text-left flex flex-wrap sm:flex-nowrap items-center gap-x-4 gap-y-2 px-5 py-4 hover:bg-white/[0.02] transition-colors"
+        className="w-full text-left flex flex-wrap sm:flex-nowrap items-center gap-x-4 gap-y-2 px-5 py-4 hover:bg-white/2 transition-colors"
       >
         <StatusBadge status={run.status} />
 
@@ -284,7 +364,7 @@ function RunRow({
 
         {/* Repo badge — only shown in "All" view */}
         {showRepoBadge && (
-          <span className="inline-flex items-center gap-1 rounded-md border border-[#24272B] bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-[#9BA3AE] shrink-0 hidden sm:flex">
+          <span className="hidden sm:inline-flex items-center gap-1 rounded-md border border-[#24272B] bg-white/3 px-2 py-0.5 text-[10px] font-mono text-[#9BA3AE] shrink-0">
             <GitBranch className="w-2.5 h-2.5" />
             {repoName ?? `#${run.repo_id}`}
           </span>
@@ -300,7 +380,7 @@ function RunRow({
 
         {/* Duration */}
         {run.duration_seconds != null && (
-          <span className="flex items-center gap-1 text-xs text-[#9BA3AE] shrink-0 hidden md:flex">
+          <span className="hidden md:flex items-center gap-1 text-xs text-[#9BA3AE] shrink-0">
             <Clock className="w-3 h-3" />
             {run.duration_seconds}s
           </span>
@@ -359,7 +439,7 @@ function RepoTab({
         "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-200",
         isSelected
           ? "bg-teal-400 text-[#03242a] font-semibold shadow-[0_0_14px_rgba(45,212,191,0.25)]"
-          : "bg-white/[0.04] text-[#9BA3AE] border border-[#24272B] hover:border-teal-400/30 hover:text-[#F5F7F8] hover:bg-white/[0.06]",
+          : "bg-white/4 text-[#9BA3AE] border border-[#24272B] hover:border-teal-400/30 hover:text-[#F5F7F8] hover:bg-white/6",
       ].join(" ")}
     >
       {label}
@@ -367,7 +447,7 @@ function RepoTab({
         <span
           className={[
             "px-1.5 py-0.5 rounded text-[10px] font-mono",
-            isSelected ? "bg-[#03242a]/30 text-[#03242a]" : "bg-white/[0.06] text-[#4B5563]",
+            isSelected ? "bg-[#03242a]/30 text-[#03242a]" : "bg-white/6 text-[#4B5563]",
           ].join(" ")}
         >
           {runCount}
@@ -425,15 +505,31 @@ function RepoSummaryCard({
           />
           <div className="min-w-0">
             <p className="text-[#F5F7F8] font-semibold text-sm truncate">{repo.name}</p>
-            <a
-              href={repo.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="text-[#4B5563] font-mono text-xs truncate block hover:text-teal-400 transition-colors"
-            >
-              {repo.url}
-            </a>
+            {repo.url ? (
+              <a
+                href={repo.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-[#4B5563] font-mono text-xs truncate block hover:text-teal-400 transition-colors"
+              >
+                {repo.url}
+              </a>
+            ) : repo.full_name ? (
+              <a
+                href={`https://github.com/${repo.full_name}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-[#4B5563] font-mono text-xs truncate block hover:text-teal-400 transition-colors"
+              >
+                github.com/{repo.full_name}
+              </a>
+            ) : (
+              <span className="text-[#4B5563] font-mono text-xs truncate block">
+                #{repo.repo_id}
+              </span>
+            )}
           </div>
         </div>
 
@@ -453,8 +549,8 @@ function RepoSummaryCard({
             <AlertDialogHeader>
               <AlertDialogTitle className="font-display">Remove this repository?</AlertDialogTitle>
               <AlertDialogDescription className="text-[#9BA3AE]">
-                "{repo.name}" will be disconnected from Synkron. Existing pipeline runs are
-                kept. You can reconnect at any time.
+                This will open GitHub App settings where you can remove "{repo.name}" from
+                Synkron. Existing pipeline runs are kept. You can reconnect at any time.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -466,23 +562,11 @@ function RepoSummaryCard({
                 disabled={isDeleting}
                 className="bg-red-500/80 hover:bg-red-500 text-white border-0"
               >
-                {isDeleting ? "Removing…" : "Yes, remove"}
+                {isDeleting ? "Opening settings…" : "Open GitHub settings"}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-        <button
-          onClick={async (e) => {
-            e.stopPropagation();
-            const result = await rotateToken(repo.repo_id);
-            // Show the new token in a one-time modal
-            alert(`New webhook secret (copy now):\n\n${result.webhook_secret}\n\nUpdate this in GitLab → Settings → Webhooks.`);
-          }}
-          className="flex items-center gap-1.5 text-slate-500 hover:text-amber-400 border border-[#24272B] hover:border-amber-400/30 hover:bg-amber-400/5 px-2.5 py-1.5 rounded-lg text-xs transition-all"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Rotate token</span>
-        </button>
       </div>
 
       {/* Mini stats row */}
@@ -547,14 +631,29 @@ function RepoDetailBanner({
                 title={fresh ? "Active in last 24h" : "No recent activity"}
               />
             </div>
-            <a
-              href={repo.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#9BA3AE] font-mono text-xs hover:text-teal-400 transition-colors truncate block"
-            >
-              {repo.url} ↗
-            </a>
+            {repo.url ? (
+              <a
+                href={repo.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#9BA3AE] font-mono text-xs hover:text-teal-400 transition-colors truncate block"
+              >
+                {repo.url} ↗
+              </a>
+            ) : repo.full_name ? (
+              <a
+                href={`https://github.com/${repo.full_name}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#9BA3AE] font-mono text-xs hover:text-teal-400 transition-colors truncate block"
+              >
+                github.com/{repo.full_name} ↗
+              </a>
+            ) : (
+              <span className="text-[#9BA3AE] font-mono text-xs truncate block">
+                Repository #{repo.repo_id}
+              </span>
+            )}
           </div>
         </div>
 
@@ -576,8 +675,8 @@ function RepoDetailBanner({
               <AlertDialogHeader>
                 <AlertDialogTitle className="font-display">Remove this repository?</AlertDialogTitle>
                 <AlertDialogDescription className="text-[#9BA3AE]">
-                  "{repo.name}" will be disconnected from Synkron. Existing pipeline runs are
-                  kept. You can reconnect at any time.
+                  This will open GitHub App settings where you can remove "{repo.name}" from
+                  Synkron. Existing pipeline runs are kept. You can reconnect at any time.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -589,23 +688,11 @@ function RepoDetailBanner({
                   disabled={isDeleting}
                   className="bg-red-500/80 hover:bg-red-500 text-white border-0"
                 >
-                  {isDeleting ? "Removing…" : "Yes, remove"}
+                  {isDeleting ? "Opening settings…" : "Open GitHub settings"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          <button
-            onClick={async (e) => {
-              e.stopPropagation();
-              const result = await rotateToken(repo.repo_id);
-              // Show the new token in a one-time modal
-              alert(`New webhook secret (copy now):\n\n${result.webhook_secret}\n\nUpdate this in GitLab → Settings → Webhooks.`);
-            }}
-            className="flex items-center gap-1.5 text-slate-500 hover:text-amber-400 border border-[#24272B] hover:border-amber-400/30 hover:bg-amber-400/5 px-2.5 py-1.5 rounded-lg text-xs transition-all"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Rotate token</span>
-          </button>
         </div>
       </div>
     </div>
@@ -638,7 +725,7 @@ function StatCard({
         <span className="text-[#9BA3AE] text-xs font-mono uppercase tracking-wider">
           {label}
         </span>
-        <div className="w-7 h-7 rounded-lg bg-white/[0.04] flex items-center justify-center">
+        <div className="w-7 h-7 rounded-lg bg-white/4 flex items-center justify-center">
           <Icon className="w-3.5 h-3.5 text-[#9BA3AE]" strokeWidth={1.5} />
         </div>
       </div>
@@ -656,7 +743,7 @@ function StatCard({
 
 function Skeleton({ className = "" }: { className?: string }) {
   return (
-    <div className={`animate-pulse rounded bg-white/[0.05] ${className}`} />
+    <div className={`animate-pulse rounded bg-white/5 ${className}`} />
   );
 }
 
@@ -714,15 +801,10 @@ function AppPage() {
     if (selectedRepoId != null) refetchRepoHealth();
   }
 
-  const handleDeleteRepo = async (id: number) => {
-    try {
-      await deleteRepo(id);
-      // If the deleted repo was selected, go back to "All"
-      if (selectedRepoId === id) setSelectedRepoId(null);
-      refetchAll();
-    } catch (e) {
-      console.error("Failed to delete repository:", e);
-    }
+  const handleDeleteRepo = async (_id: number) => {
+    // Repos are managed on GitHub now — the App still receives webhooks until
+    // the repo is removed there, so send the user to GitHub to remove it.
+    window.open("https://github.com/settings/installations", "_blank", "noopener,noreferrer");
   };
 
   // ── Derived data ──
@@ -758,11 +840,12 @@ function AppPage() {
   const initialLoading = reposLoading || runsLoading;
 
   // If we have 0 repos and we're not loading, trigger the initial connect flow
+  // Only set connecting state if we've finished loading and truly have no repos
   useEffect(() => {
-    if (!initialLoading && repos.length === 0 && !isConnectingInitial) {
+    if (!initialLoading && !reposLoading && repos.length === 0 && !isConnectingInitial) {
       setIsConnectingInitial(true);
     }
-  }, [initialLoading, repos.length, isConnectingInitial]);
+  }, [initialLoading, reposLoading, repos.length, isConnectingInitial]);
 
   // ── Full-screen guards ──
   if (reposError && !reposLoading) {
@@ -788,7 +871,10 @@ function AppPage() {
   if (isConnectingInitial) {
     return (
       <ConnectRepository
-        onConnected={() => { setIsConnectingInitial(false); refetchAll(); }}
+        onConnected={async () => {
+          await refetchAll();
+          setIsConnectingInitial(false);
+        }}
         onCancel={() => { window.location.href = "/"; }}
       />
     );
@@ -797,7 +883,10 @@ function AppPage() {
   if (showAddRepo) {
     return (
       <ConnectRepository
-        onConnected={() => { setShowAddRepo(false); refetchAll(); }}
+        onConnected={async () => {
+          await refetchAll();
+          setShowAddRepo(false);
+        }}
         onCancel={() => setShowAddRepo(false)}
       />
     );
@@ -825,8 +914,10 @@ function AppPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="hidden sm:inline text-[#9BA3AE] text-xs font-mono max-w-[180px] truncate">
-              {getFirebaseAuth().currentUser?.email}
+            <span className="hidden sm:inline text-[#9BA3AE] text-xs font-mono max-w-45 truncate">
+              {getFirebaseAuth().currentUser?.displayName ??
+                 getFirebaseAuth().currentUser?.email ?? 
+                 "Signed in"}
             </span>
             <button
               onClick={() => signOut(getFirebaseAuth())}
@@ -912,15 +1003,21 @@ function AppPage() {
                     />
                     <StatCard
                       icon={Clock}
-                      label="Avg pipeline"
-                      value={repoStats.avgDuration != null ? `${repoStats.avgDuration}s` : "—"}
+                      label="p50 pipeline"
+                      value={repoStats.p50Duration != null ? `${repoStats.p50Duration}s` : "—"}
                       delay={0.12}
+                    />
+                    <StatCard
+                      icon={Clock}
+                      label="p95 pipeline"
+                      value={repoStats.p95Duration != null ? `${repoStats.p95Duration}s` : "—"}
+                      delay={0.18}
                     />
                     <StatCard
                       icon={FileText}
                       label="Docs updated"
                       value={repoStats.docsUpdated}
-                      delay={0.18}
+                      delay={0.24}
                     />
                   </>
                 )}

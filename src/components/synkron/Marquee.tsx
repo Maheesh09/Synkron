@@ -1,4 +1,4 @@
-const row1 = ["FastAPI", "Python", "MongoDB", "GitLab"];
+const row1 = ["FastAPI", "Python", "MongoDB", "GitHub"];
 const row2 = ["Gemini 3.5 Flash", "Google Cloud", "Koyeb"];
 
 const colors = ["#2DD4BF", "#818CF8", "#5eead4", "#a78bfa", "#34d399", "#f472b6", "#fbbf24"];

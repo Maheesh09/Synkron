@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Scissors, CheckCircle2, Sparkles } from "lucide-react";
+import { Scissors, CheckCircle2, Sparkles, Github } from "lucide-react";
 
 function Card({
   children,
@@ -42,9 +42,7 @@ export function BentoFeatures() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">
-            Why Synkron
-          </p>
+          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">Why Synkron</p>
           <h2
             className="font-display font-bold text-white mt-3"
             style={{
@@ -53,7 +51,7 @@ export function BentoFeatures() {
               letterSpacing: "-0.02em",
             }}
           >
-            Everything your team needs.
+            Built the way you work.
           </h2>
         </motion.div>
 
@@ -62,22 +60,19 @@ export function BentoFeatures() {
           <Card className="lg:col-span-7 p-8 relative" delay={0}>
             <div className="absolute inset-0 dot-grid opacity-50 pointer-events-none" />
             <div className="relative">
-              {/* GitLab icon */}
               <div className="w-14 h-14 rounded-2xl bg-teal-400/10 border border-teal-400/20 flex items-center justify-center">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7 text-teal-400">
-                  <path d="M22.65 14.39L12 22.13 1.35 14.39a.84.84 0 0 1-.3-.94l1.22-3.78 2.44-7.51A.42.42 0 0 1 4.82 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.49h8.1l2.44-7.51A.42.42 0 0 1 18.6 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.51L23 13.45a.84.84 0 0 1-.35.94z" />
-                </svg>
+                <Github className="w-7 h-7 text-teal-400" />
               </div>
               <h3 className="font-display text-white text-2xl mt-5 font-semibold">
-                GitLab MCP Native
+                Native GitHub Integration
               </h3>
               <p className="text-slate-400 mt-2 max-w-md leading-relaxed">
-                Synkron speaks GitLab fluently through the Model Context Protocol
-                — no glue code, no brittle scraping.
+                Synkron integrates directly with GitHub through the Model Context Protocol. No extra
+                libraries or complicated setup.
               </p>
               <div className="mt-6 rounded-xl border border-white/[0.07] bg-[#06060F] p-4 font-mono text-[11px] overflow-x-auto">
                 <span className="text-slate-500">POST </span>
-                <span className="text-teal-300">/webhook/gitlab</span>
+                <span className="text-teal-300">/webhook/github</span>
                 {"\n"}
                 <span className="text-slate-600">{"{"}</span>
                 <br />
@@ -106,11 +101,11 @@ export function BentoFeatures() {
 
           <Card className="lg:col-span-5 p-8" delay={0.08}>
             <h3 className="font-display text-white text-2xl font-semibold">
-              Learns from your team
+              Improves with your feedback
             </h3>
             <p className="text-slate-400 mt-2 leading-relaxed">
-              Every accepted, edited, or rejected MR trains the next one.
-              Synkron's writing voice converges on yours.
+              Every pull request you accept, edit, or close teaches Synkron to get better. The
+              writing style matches your team's voice over time.
             </p>
             <div className="relative mt-8 aspect-square max-w-[260px] mx-auto">
               <svg viewBox="0 0 200 200" className="w-full h-full">
@@ -187,12 +182,10 @@ export function BentoFeatures() {
             <div className="w-11 h-11 rounded-xl bg-teal-400/10 border border-teal-400/15 flex items-center justify-center">
               <Scissors className="w-5 h-5 text-teal-400" strokeWidth={1.75} />
             </div>
-            <h3 className="font-display text-white text-xl mt-4 font-semibold">
-              Section-level precision
-            </h3>
+            <h3 className="font-display text-white text-xl mt-4 font-semibold">Precise updates</h3>
             <p className="text-slate-400 text-sm mt-2 leading-relaxed">
-              Only the exact sections that reference changed code get rewritten.
-              Not a word more.
+              Only the sections that reference changed code get updated. Exactly what changed,
+              nothing more.
             </p>
           </Card>
 
@@ -201,11 +194,11 @@ export function BentoFeatures() {
               <CheckCircle2 className="w-5 h-5 text-teal-400" strokeWidth={1.75} />
             </div>
             <h3 className="font-display text-white text-xl mt-4 font-semibold">
-              Zero new workflow
+              No workflow changes
             </h3>
             <p className="text-slate-400 text-sm mt-2 leading-relaxed">
-              No new tool to learn. The merge request is how your team already
-              reviews everything.
+              No new tools to learn. Pull requests are how your team already reviews code, so that's
+              how Synkron works too.
             </p>
           </Card>
 
@@ -214,11 +207,11 @@ export function BentoFeatures() {
               <Sparkles className="w-5 h-5 text-indigo-300" strokeWidth={1.75} />
             </div>
             <h3 className="font-display text-white text-xl mt-4 font-semibold">
-              Powered by Gemini 3.5 Flash
+              Powered by Google Gemini
             </h3>
             <p className="text-slate-400 text-sm mt-2 leading-relaxed">
-              Google's frontier model handles the reasoning behind every
-              rewrite.
+              Built on Google's latest language model to understand code changes and write accurate
+              documentation updates.
             </p>
           </Card>
         </div>
