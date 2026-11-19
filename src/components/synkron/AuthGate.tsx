@@ -1,11 +1,27 @@
 import { useState, useEffect, type ReactNode } from "react";
-import {
-  onAuthStateChanged,
-  signInWithPopup,
-  type User,
-} from "firebase/auth";
-import { Github } from "lucide-react";
+import { onAuthStateChanged, signInWithPopup, type User } from "firebase/auth";
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft, Github, Loader2, ShieldCheck } from "lucide-react";
 import { getFirebaseAuth, githubProvider } from "@/lib/firebase";
+import { SyncIcon } from "./SyncIcon";
+
+/** Shared frame for the full-screen auth and onboarding steps. */
+export function AuthFrame({ children }: { children: ReactNode }) {
+  return (
+    <div className="relative grid min-h-screen place-items-center overflow-hidden bg-[#04040A] px-4 py-12">
+      <div aria-hidden className="pointer-events-none absolute inset-0 hero-grid opacity-70" />
+      <div className="relative w-full max-w-[400px]">
+        <Link to="/" className="mx-auto mb-8 flex w-fit items-center gap-2">
+          <SyncIcon className="h-5 w-5 text-teal-400" />
+          <span className="font-display text-lg font-semibold tracking-tight text-[#F5F7F8]">
+            Synkron
+          </span>
+        </Link>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 /**
  * Gates the dashboard behind GitHub sign-in. Shows a sign-in screen until the
@@ -43,34 +59,51 @@ export function AuthGate({ children }: { children: ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen grid place-items-center bg-[#04040A] text-[#9BA3AE]">
-        Loading…
+      <div className="grid min-h-screen place-items-center bg-[#04040A]" role="status">
+        <Loader2 className="h-5 w-5 animate-spin text-[#6B7280]" />
+        <span className="sr-only">Loading</span>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen grid place-items-center bg-[#04040A] px-4">
-        <div className="w-full max-w-sm rounded-xl border border-[#24272B] bg-[#111315] p-7 text-center">
-          <h1 className="text-lg font-semibold text-[#F5F7F8] mb-1">
-            Synkron <span className="text-teal-400">Dashboard</span>
+      <AuthFrame>
+        <div className="rounded-xl border border-[#24272B] bg-[#111315] p-7 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)]">
+          <h1 className="font-display text-xl font-semibold tracking-tight text-[#F5F7F8]">
+            Sign in to Synkron
           </h1>
-          <p className="text-sm text-[#9BA3AE] mb-6">
-            Sign in to connect your repositories and watch the agent keep your
-            docs in sync.
+          <p className="mt-2 text-sm leading-relaxed text-[#9BA3AE]">
+            Use your GitHub account to connect repositories and review every documentation update
+            the agent makes.
           </p>
           <button
             onClick={signIn}
             disabled={busy}
-            className="w-full flex items-center justify-center gap-2 rounded-lg bg-white text-[#1f1f1f] font-medium px-4 py-2.5 hover:bg-gray-100 transition disabled:opacity-60"
+            className="mt-6 flex h-10 w-full items-center justify-center gap-2 rounded-md bg-[#F5F7F8] text-sm font-semibold text-[#111315] transition hover:bg-white disabled:opacity-60"
           >
-            <Github className="w-5 h-5" />
-            {busy ? "Signing in…" : "Continue with GitHub"}
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Github className="h-4 w-4" />}
+            {busy ? "Waiting for GitHub…" : "Continue with GitHub"}
           </button>
-          {error && <p className="text-sm text-red-400 mt-3">{error}</p>}
+          {error && (
+            <p role="alert" className="mt-3 text-sm text-red-400">
+              {error}
+            </p>
+          )}
+          <p className="mt-6 flex items-start gap-2 border-t border-[#24272B] pt-5 text-xs leading-relaxed text-[#6B7280]">
+            <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-400/80" />
+            Signing in only identifies you. Repository access is granted separately, per repository,
+            when you install the GitHub App.
+          </p>
         </div>
-      </div>
+        <Link
+          to="/"
+          className="mx-auto mt-6 flex w-fit items-center gap-1.5 text-xs text-[#6B7280] hover:text-[#9BA3AE]"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to synkron.dev
+        </Link>
+      </AuthFrame>
     );
   }
 

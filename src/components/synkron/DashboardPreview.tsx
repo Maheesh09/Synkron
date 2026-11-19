@@ -1,92 +1,74 @@
 import { motion } from "framer-motion";
-import { useMouseTilt } from "@/hooks/useMouseTilt";
-import { TrendingUp } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+import { Section, SectionHeader } from "./Section";
+import { reveal } from "@/lib/motion";
 
-const bullets = [
-  "See real-time status for each repository",
-  "Review pull request history and processing details",
-  "Track improvements as feedback makes the system better",
+const captions = [
+  {
+    title: "Every run, explained",
+    desc: "Status, commit, documents touched, duration and cost for each push. Skipped runs say which agent stopped them and why.",
+  },
+  {
+    title: "Per-stage timing",
+    desc: "Open any run to see how long each agent took, so slow stages are obvious instead of guessed.",
+  },
+  {
+    title: "One view per repository",
+    desc: "Switch between repositories to compare success rate, median and p95 latency, and documents updated.",
+  },
 ];
 
 export function DashboardPreview() {
-  const { ref, tilt, onMouseMove, onMouseLeave } = useMouseTilt(6);
-
   return (
-    <section id="dashboard" className="py-16 md:py-[120px] px-6 bg-[#04040A] relative">
-      {/* Edge separator */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
+    <Section id="dashboard" className="border-t border-white/[0.06] py-20 sm:py-28">
+      <SectionHeader
+        index="04"
+        label="Dashboard"
+        title="See what the agent did, and why."
+        description="The pull request is where you review. The dashboard is where you audit: every run is recorded with its outcome, timings and cost."
+        aside={
+          <Link
+            to="/app"
+            className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-teal-400 transition-colors hover:text-teal-300"
+          >
+            Open the dashboard
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        }
+      />
 
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
-        {/* Text side */}
-        <motion.div
-          initial={{ opacity: 0, x: -24 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">
-            Live dashboard
-          </p>
-          <h2
-            className="font-display font-bold text-white mt-3"
-            style={{
-              fontSize: "clamp(34px, 4.5vw, 52px)",
-              lineHeight: 1.1,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            Monitor your documentation <span className="text-gradient">in one place.</span>
-          </h2>
-          <p className="text-slate-400 text-lg leading-relaxed mt-5">
-            See which repositories need updates, review pull request history, and watch Synkron
-            improve over time as you provide feedback.
-          </p>
-          <ul className="mt-7 space-y-3">
-            {bullets.map((t, i) => (
-              <motion.li
-                key={t}
-                initial={{ opacity: 0, x: -16 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="flex gap-3 text-slate-300"
-              >
-                <span className="text-teal-400 mt-0.5">—</span>
-                {t}
-              </motion.li>
-            ))}
-          </ul>
-          <motion.a
-            href="#"
-            whileHover={{ x: 4 }}
-            className="inline-flex items-center gap-2 mt-8 text-teal-400 hover:text-teal-300 transition-colors text-sm font-medium"
-          >
-            <TrendingUp className="w-4 h-4" strokeWidth={2} />
-            See the full dashboard →
-          </motion.a>
-        </motion.div>
+      <motion.figure
+        {...reveal}
+        className="mt-12 overflow-hidden rounded-xl border border-white/[0.08] bg-[#0A0A14] p-1.5 shadow-[0_40px_100px_-40px_rgba(0,0,0,0.9)]"
+      >
+        <div className="flex items-center gap-1.5 px-3 py-2">
+          <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
+          <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
+          <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
+          <span className="ml-3 hidden rounded bg-white/[0.04] px-3 py-1 font-mono text-[11px] text-slate-500 sm:inline">
+            synkron.dev/app
+          </span>
+        </div>
+        <img
+          src="/ss.png"
+          alt="Synkron dashboard showing pipeline run statistics and a table of recent runs"
+          width={1600}
+          height={1000}
+          loading="lazy"
+          decoding="async"
+          className="h-auto w-full rounded-lg border border-white/[0.06]"
+        />
+      </motion.figure>
 
-        {/* Card side */}
-        <motion.div
-          ref={ref}
-          onMouseMove={onMouseMove}
-          onMouseLeave={onMouseLeave}
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          style={{ perspective: 1200 }}
-        >
-          <motion.div
-            animate={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY }}
-            transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            style={{ transformStyle: "preserve-3d" }}
-            className="rounded-3xl border border-white/[0.08] bg-[#0D0D1C] shadow-[0_40px_120px_-30px_rgba(45,212,191,0.15)] overflow-hidden flex"
-          >
-            <img src="/ss.png" alt="Synkron Dashboard" className="w-full h-auto object-cover" />
+      <div className="mt-10 grid gap-8 sm:grid-cols-3">
+        {captions.map((c) => (
+          <motion.div {...reveal} key={c.title} className="border-l border-white/10 pl-4">
+            <h3 className="text-[15px] font-semibold text-white">{c.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-400">{c.desc}</p>
           </motion.div>
-        </motion.div>
+        ))}
       </div>
-    </section>
+    </Section>
   );
 }

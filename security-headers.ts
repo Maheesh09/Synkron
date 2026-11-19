@@ -28,9 +28,8 @@ export function buildContentSecurityPolicy(apiUrl?: string): string {
     "default-src": ["'self'"],
     // 'unsafe-inline': TanStack Start streams inline hydration scripts and the
     //   page has an inline JSON-LD block. (Next step: per-request nonces.)
-    // 'wasm-unsafe-eval': the Spline 3D runtime compiles WebAssembly.
     // apis.google.com: Firebase Auth loads gapi for signInWithPopup.
-    "script-src": ["'self'", "'unsafe-inline'", "'wasm-unsafe-eval'", "https://apis.google.com"],
+    "script-src": ["'self'", "'unsafe-inline'", "https://apis.google.com"],
     "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
     "font-src": ["'self'", "data:", "https://fonts.gstatic.com"],
     "img-src": [

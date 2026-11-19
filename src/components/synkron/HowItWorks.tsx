@@ -1,143 +1,71 @@
 import { motion } from "framer-motion";
-import { GitCommitHorizontal, ScanSearch, BrainCircuit, GitPullRequest } from "lucide-react";
-import { useMouseTilt } from "@/hooks/useMouseTilt";
+import { GitCommitHorizontal, ScanSearch, FileText, GitPullRequest } from "lucide-react";
+import { Section, SectionHeader } from "./Section";
+import { ease } from "@/lib/motion";
 
 const steps = [
   {
-    n: "01",
     Icon: GitCommitHorizontal,
     title: "You push code",
-    desc: "Whenever a developer commits code to any branch, GitHub notifies Synkron instantly through a webhook.",
+    desc: "GitHub sends Synkron a signed webhook for every push. Nothing changes in your CI or your workflow.",
+    artifact: "X-GitHub-Event: push",
   },
   {
-    n: "02",
     Icon: ScanSearch,
-    title: "Synkron analyzes the changes",
-    desc: "The system reads through the code diff and understands what actually changed and why using semantic analysis.",
+    title: "The diff is analysed",
+    desc: "Synkron works out what the code now does differently. Formatting, tests and lockfiles are filtered out in under two seconds.",
+    artifact: "diff → behaviour changes",
   },
   {
-    n: "03",
-    Icon: BrainCircuit,
-    title: "Documentation gets prepared",
-    desc: "Multiple processing steps identify affected docs, rewrite impacted sections, and prepare all the changes for you.",
+    Icon: FileText,
+    title: "Affected docs are rewritten",
+    desc: "Only the documents that describe the changed behaviour are touched, and only the sections that are now wrong.",
+    artifact: "docs/auth.md · 2 sections",
   },
   {
-    n: "04",
     Icon: GitPullRequest,
-    title: "A pull request appears",
-    desc: "Synkron opens a real GitHub PR with complete updated documentation, full context, and an explanation for your review.",
+    title: "A pull request opens",
+    desc: "One atomic commit on its own branch, with a description that explains each change for the reviewer.",
+    artifact: "PR #128 ready for review",
   },
 ];
 
-function StepCard({ s, i }: { s: (typeof steps)[number]; i: number }) {
-  const { ref, tilt, onMouseMove, onMouseLeave } = useMouseTilt(8);
-  return (
-    <motion.div
-      ref={ref}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      style={{ perspective: 1000 }}
-      className="relative"
-    >
-      <motion.div
-        animate={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY }}
-        transition={{ type: "spring", stiffness: 200, damping: 20 }}
-        style={{ transformStyle: "preserve-3d" }}
-        className="group relative rounded-2xl border border-white/[0.07] bg-[#0D0D1C] p-7 h-full overflow-hidden hover:border-teal-400/20 transition-colors"
-      >
-        {/* Big background step number */}
-        <div
-          className="absolute -bottom-3 right-3 font-display font-extrabold leading-none select-none pointer-events-none"
-          style={{
-            fontSize: 96,
-            color: "rgba(45,212,191,0.04)",
-            lineHeight: 1,
-          }}
-        >
-          {s.n}
-        </div>
-
-        {/* Hover glow */}
-        <div
-          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 50% at 30% 30%, rgba(45,212,191,0.04), transparent)",
-          }}
-        />
-
-        <div className="relative">
-          {/* Step number badge */}
-          <span className="font-mono text-[11px] text-teal-400/50 uppercase tracking-widest">
-            step {s.n}
-          </span>
-
-          {/* Icon */}
-          <div className="mt-3 w-12 h-12 rounded-xl bg-teal-400/10 flex items-center justify-center group-hover:bg-teal-400/20 group-hover:shadow-[0_0_20px_rgba(45,212,191,0.2)] transition-all duration-300">
-            <s.Icon className="w-5 h-5 text-teal-400" strokeWidth={1.75} />
-          </div>
-
-          <h3 className="text-white font-semibold text-lg mt-4 font-display leading-snug">
-            {s.title}
-          </h3>
-          <p className="text-slate-400 text-sm leading-relaxed mt-2">{s.desc}</p>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
 export function HowItWorks() {
   return (
-    <section id="how" className="py-16 md:py-[140px] px-6 relative">
-      {/* Subtle section bg glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 700px 400px at 50% 50%, rgba(129,140,248,0.03) 0%, transparent 100%)",
-        }}
+    <Section id="how" className="py-20 sm:py-28">
+      <SectionHeader
+        index="01"
+        label="How it works"
+        title="From commit to corrected docs, without anyone asking."
+        description="Synkron sits between your repository and your documentation. It reacts to pushes you already make and hands back a change you can review in the place you already review code."
       />
 
-      <div className="max-w-7xl mx-auto relative">
-        {/* Label + heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">How it works</p>
-          <h2
-            className="font-display font-bold text-white mt-3"
-            style={{
-              fontSize: "clamp(36px, 5vw, 56px)",
-              lineHeight: 1.05,
-              letterSpacing: "-0.02em",
-            }}
+      <ol className="mt-12 grid overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.07] gap-px sm:grid-cols-2 lg:grid-cols-4">
+        {steps.map((s, i) => (
+          <motion.li
+            key={s.title}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.5, delay: i * 0.08, ease }}
+            className="group flex flex-col bg-[#06060D] p-6 transition-colors hover:bg-[#0A0A14]"
           >
-            From commit to updated docs <span className="text-gradient">in seconds.</span>
-          </h2>
-        </motion.div>
-
-        <div className="relative mt-16">
-          {/* Connector line (desktop only) */}
-          <div className="hidden lg:block absolute top-[88px] left-[calc(12.5%+24px)] right-[calc(12.5%+24px)] h-px pointer-events-none">
-            <div className="w-full h-full border-t border-dashed border-teal-400/20" />
-            <div className="absolute -top-[3px] w-1.5 h-1.5 rounded-full bg-teal-400 shadow-[0_0_8px_#2DD4BF] traverse-dot" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 relative">
-            {steps.map((s, i) => (
-              <StepCard key={s.n} s={s} i={i} />
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
+            <div className="flex items-center justify-between">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-teal-400">
+                <s.Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
+              </span>
+              <span className="font-mono text-xs tabular-nums text-slate-600">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+            </div>
+            <h3 className="mt-6 text-[17px] font-semibold tracking-tight text-white">{s.title}</h3>
+            <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-400">{s.desc}</p>
+            <p className="mt-6 border-t border-dashed border-white/[0.08] pt-4 font-mono text-[11px] text-slate-500">
+              {s.artifact}
+            </p>
+          </motion.li>
+        ))}
+      </ol>
+    </Section>
   );
 }

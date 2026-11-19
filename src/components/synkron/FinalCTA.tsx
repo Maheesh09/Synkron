@@ -1,109 +1,75 @@
-import { motion, AnimatePresence, useInView } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { Check } from "lucide-react";
+import { motion } from "framer-motion";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, Github } from "lucide-react";
+import { reveal } from "@/lib/motion";
+import { REPO_URL } from "@/lib/site";
 
-function useCountUp(end: number, start: boolean, dur = 2) {
-  const [v, setV] = useState(0);
-  useEffect(() => {
-    if (!start) return;
-    let raf = 0;
-    const t0 = performance.now();
-    const tick = (t: number) => {
-      const p = Math.min((t - t0) / (dur * 1000), 1);
-      setV(Math.round(p * end));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [end, start, dur]);
-  return v;
-}
+const setup = [
+  { n: "1", text: "Sign in with GitHub" },
+  { n: "2", text: "Install the App on your repositories" },
+  { n: "3", text: "Push code as usual" },
+];
 
 export function FinalCTA() {
-  const [email, setEmail] = useState("");
-  const [done, setDone] = useState(false);
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-  const repoCount = useCountUp(847, inView);
-
   return (
-    <section
-      id="waitlist"
-      ref={ref}
-      className="py-20 md:py-[160px] px-6 relative overflow-hidden"
-    >
-      {/* Animated orbs */}
-      <div
-        className="absolute left-1/2 top-1/2 -translate-x-[65%] -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
-        style={{
-          background: "rgba(45,212,191,0.06)",
-          filter: "blur(120px)",
-          animation: "float-orb1 8s ease-in-out infinite",
-        }}
-      />
-      <div
-        className="absolute left-1/2 top-1/2 -translate-x-[35%] -translate-y-1/2 w-[400px] h-[400px] rounded-full pointer-events-none"
-        style={{
-          background: "rgba(129,140,248,0.06)",
-          filter: "blur(100px)",
-          animation: "float-orb2 10s ease-in-out infinite",
-        }}
-      />
+    <section id="get-started" className="px-5 pb-20 pt-4 sm:px-8 sm:pb-28">
+      <motion.div
+        {...reveal}
+        className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-white/[0.08] bg-[#08080F]"
+      >
+        <div aria-hidden className="pointer-events-none absolute inset-0 hero-grid opacity-60" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(50% 80% at 100% 0%, rgba(45,212,191,0.10) 0%, transparent 70%)",
+          }}
+        />
 
-      <div className="relative max-w-3xl mx-auto text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <h2
-            className="font-display font-extrabold text-white"
-            style={{
-              fontSize: "clamp(34px, 8vw, 80px)",
-              lineHeight: 1.05,
-              letterSpacing: "-0.03em",
-            }}
-          >
-            Get started today
-            <br />
-            <span className="text-gradient">for free.</span>
-          </h2>
-          <p className="text-slate-400 mt-5 text-base sm:text-lg leading-relaxed">
-            Connect your GitHub repository and let Synkron keep your documentation always current.
-          </p>
-        </motion.div>
+        <div className="relative grid grid-cols-1 gap-10 p-7 [&>*]:min-w-0 sm:p-12 lg:grid-cols-12 lg:items-center">
+          <div className="lg:col-span-7">
+            <h2 className="font-display text-[34px] font-extrabold leading-[1.05] tracking-[-0.03em] text-white sm:text-[52px]">
+              Get started today
+              <br />
+              <span className="text-teal-400">for free.</span>
+            </h2>
+            <p className="mt-5 max-w-md text-base leading-relaxed text-slate-400">
+              Connect a repository in about a minute. Your next push that changes documented
+              behaviour comes back as a pull request.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                to="/app"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-teal-400 px-5 text-sm font-semibold text-[#04040A] transition hover:bg-teal-300"
+              >
+                Connect GitHub
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href={REPO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-white/[0.12] px-5 text-sm font-medium text-slate-200 transition-colors hover:border-white/25 hover:bg-white/[0.03]"
+              >
+                <Github className="h-4 w-4" />
+                View source
+              </a>
+            </div>
+          </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-9 flex justify-center"
-        >
-          <motion.a
-            href="/app"
-            whileHover={{
-              scale: 1.04,
-              y: -2,
-              boxShadow: "0 0 40px rgba(45,212,191,0.45)",
-            }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full sm:w-auto rounded-full bg-teal-400 hover:bg-teal-300 text-[#04040A] font-semibold px-8 py-3 transition-colors whitespace-nowrap"
-          >
-            Connect GitHub →
-          </motion.a>
-        </motion.div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.5, duration: 0.6 }}
-          className="mt-8 text-slate-600 text-sm font-mono"
-        >
-          Already in use: {repoCount.toLocaleString()} repositories
-        </motion.p>
-      </div>
+          <ol className="space-y-px overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.07] lg:col-span-5">
+            {setup.map((s) => (
+              <li key={s.n} className="flex items-center gap-4 bg-[#0A0A14]/90 px-5 py-4">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/10 font-mono text-xs text-slate-400">
+                  {s.n}
+                </span>
+                <span className="text-sm text-slate-200">{s.text}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </motion.div>
     </section>
   );
 }

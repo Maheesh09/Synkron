@@ -1,11 +1,12 @@
-import { motion, useInView } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { Bot, ArrowRight } from "lucide-react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import { useRef } from "react";
+import { GitPullRequest, FileCode2, FileText, Bot } from "lucide-react";
+import { Section, SectionHeader } from "./Section";
+import { reveal } from "@/lib/motion";
 
-const diff: { type: "ctx" | "del" | "add"; text: string }[] = [
-  { type: "ctx", text: "from datetime import timedelta" },
-  { type: "ctx", text: "from jose import jwt, JWTError" },
-  { type: "ctx", text: "" },
+type Line = { type: "ctx" | "del" | "add"; text: string };
+
+const codeDiff: Line[] = [
   { type: "ctx", text: "class AuthMiddleware:" },
   { type: "ctx", text: "    def __init__(self, secret: str):" },
   { type: "ctx", text: "        self.secret = secret" },
@@ -20,190 +21,154 @@ const diff: { type: "ctx" | "del" | "add"; text: string }[] = [
   { type: "add", text: "        return payload" },
 ];
 
-function useCountUp(end: number, start: boolean, dur = 1.2) {
-  const [v, setV] = useState(0);
-  useEffect(() => {
-    if (!start) return;
-    let raf = 0;
-    const t0 = performance.now();
-    const tick = (t: number) => {
-      const p = Math.min((t - t0) / (dur * 1000), 1);
-      setV(Math.round(p * end));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [end, start, dur]);
-  return v;
+const docDiff: Line[] = [
+  { type: "ctx", text: "## Token lifetimes" },
+  { type: "ctx", text: "" },
+  { type: "del", text: "Access tokens are valid for 24 hours." },
+  { type: "add", text: "Access tokens are valid for 15 minutes." },
+  { type: "add", text: "A refresh token, valid for 7 days, is issued" },
+  { type: "add", text: "at login. Use it to request a new access token." },
+  { type: "ctx", text: "" },
+  { type: "ctx", text: "## Verifying a token" },
+  { type: "ctx", text: "" },
+  { type: "add", text: "Expired tokens are rejected before the payload" },
+  { type: "add", text: "is returned to your handler." },
+];
+
+function Diff({ lines, start, play }: { lines: Line[]; start: number; play: boolean }) {
+  const reduce = useReducedMotion();
+  return (
+    <pre className="overflow-x-auto py-2 font-mono text-[11.5px] leading-6 sm:text-xs">
+      {lines.map((l, i) => (
+        <motion.div
+          key={i}
+          initial={reduce ? false : { opacity: 0 }}
+          animate={play ? { opacity: 1 } : undefined}
+          transition={{ duration: 0.25, delay: 0.15 + i * 0.04 }}
+          className={[
+            "flex min-w-max pr-4",
+            l.type === "del" && "bg-red-500/[0.08] text-red-200/80",
+            l.type === "add" && "bg-teal-400/[0.08] text-teal-100/90",
+            l.type === "ctx" && "text-slate-500",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          <span className="w-10 shrink-0 select-none pr-3 text-right tabular-nums text-slate-700">
+            {start + i}
+          </span>
+          <span
+            className={`w-4 shrink-0 select-none ${
+              l.type === "del" ? "text-red-400/70" : l.type === "add" ? "text-teal-400/80" : ""
+            }`}
+          >
+            {l.type === "del" ? "-" : l.type === "add" ? "+" : " "}
+          </span>
+          <span>{l.text || " "}</span>
+        </motion.div>
+      ))}
+    </pre>
+  );
 }
 
-function Stats() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-50px" });
+function FileHeader({
+  icon: Icon,
+  path,
+  stat,
+  tag,
+}: {
+  icon: typeof FileText;
+  path: string;
+  stat: string;
+  tag: string;
+}) {
   return (
-    <div ref={ref} className="mt-10 flex flex-wrap justify-center gap-3">
-      {[`⚡ 18 seconds from code push to PR creation`, `📄 2 docs updated`, `✓ PR opened`].map(
-        (c) => (
-          <motion.span
-            key={c}
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="rounded-full bg-white/5 border border-white/[0.08] px-5 py-2 text-slate-300 text-sm"
-          >
-            {c}
-          </motion.span>
-        ),
-      )}
+    <div className="flex items-center justify-between gap-3 border-b border-white/[0.06] bg-white/[0.02] px-4 py-2.5">
+      <span className="flex min-w-0 items-center gap-2 font-mono text-xs text-slate-300">
+        <Icon className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+        <span className="truncate">{path}</span>
+      </span>
+      <span className="flex shrink-0 items-center gap-2">
+        <span className="hidden font-mono text-[11px] text-slate-500 sm:inline">{stat}</span>
+        <span className="rounded border border-white/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-500">
+          {tag}
+        </span>
+      </span>
     </div>
   );
 }
 
 export function LiveMockup() {
-  const sectionRef = useRef(null);
-  const inView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-120px" });
 
   return (
-    <section className="py-16 md:py-[140px] px-6" ref={sectionRef}>
-      <div className="max-w-7xl mx-auto">
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">Real output</p>
-          <h2
-            className="font-display font-bold text-white mt-3"
-            style={{
-              fontSize: "clamp(34px, 4.5vw, 52px)",
-              lineHeight: 1.1,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            See a pull request <span className="text-gradient">in action.</span>
-          </h2>
-        </motion.div>
+    <Section id="example" className="border-t border-white/[0.06] py-20 sm:py-28">
+      <SectionHeader
+        index="03"
+        label="Real output"
+        title="A pull request your reviewers already understand."
+        description="Left: the commit you pushed. Right: the documentation change Synkron proposed for it. No new tool, no dashboard to check, just a diff."
+      />
 
-        {/* Mockup card */}
-        <motion.div
-          initial={{ opacity: 0, rotateX: 14, y: 40 }}
-          whileInView={{ opacity: 1, rotateX: 0, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          style={{ perspective: 1400, transformOrigin: "center top" }}
-          className="max-w-5xl mx-auto mt-14"
-        >
-          <div className="rounded-2xl border border-white/[0.09] bg-[#0A0A14] shadow-[0_40px_120px_-20px_rgba(45,212,191,0.12)] overflow-hidden">
-            <div className="grid md:grid-cols-2 relative">
-              {/* Left: diff editor */}
-              <div className="border-b md:border-b-0 md:border-r border-white/[0.07] bg-[#06060F]">
-                <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06] bg-[#06060F]">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
-                  <span className="ml-3 font-mono text-xs text-slate-500">auth/middleware.py</span>
-                </div>
-                <pre className="font-mono text-[10px] sm:text-xs leading-5 sm:leading-6 p-3 sm:p-4 overflow-x-auto">
-                  {diff.map((l, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={inView ? { opacity: 1, x: 0 } : {}}
-                      transition={{
-                        duration: 0.3,
-                        delay: 0.3 + i * 0.06,
-                        ease: [0.22, 1, 0.36, 1],
-                      }}
-                      className={
-                        l.type === "del"
-                          ? "bg-red-400/10 text-red-300/90 border-l-2 border-red-500/50 pl-2"
-                          : l.type === "add"
-                            ? "bg-teal-400/10 text-teal-200/90 border-l-2 border-teal-500/50 pl-2"
-                            : "text-slate-500 pl-2 border-l-2 border-transparent"
-                      }
-                    >
-                      <span className="select-none mr-3 text-slate-600 w-3 inline-block">
-                        {l.type === "del" ? "−" : l.type === "add" ? "+" : " "}
-                      </span>
-                      {l.text || " "}
-                    </motion.div>
-                  ))}
-                </pre>
-              </div>
-
-              {/* Center arrow */}
-              <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex-col items-center gap-1.5">
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={inView ? { scale: 1, opacity: 1 } : {}}
-                  transition={{ delay: 1.2, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="rounded-full bg-[#04040A] border border-teal-400/40 p-3 shadow-[0_0_24px_rgba(45,212,191,0.35)]"
-                >
-                  <ArrowRight className="w-4 h-4 text-teal-400" />
-                </motion.div>
-                <span className="font-mono text-[10px] text-teal-400/80 uppercase tracking-widest">
-                  synkron
-                </span>
-              </div>
-
-              {/* Right: MR preview */}
-              <div className="bg-[#0D0D1C]">
-                <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/[0.06]">
-                  <span className="rounded bg-green-500/20 text-green-400 text-[10px] font-mono px-2 py-0.5 border border-green-500/30">
-                    !42
-                  </span>
-                  <span className="text-white text-sm font-medium">Documentation update</span>
-                </div>
-
-                <div className="px-5 py-4 flex items-center gap-3 border-b border-white/[0.06]">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-indigo-400 flex items-center justify-center flex-shrink-0">
-                    <Bot className="w-4 h-4 text-[#04040A]" />
-                  </div>
-                  <div>
-                    <div className="text-white text-sm font-medium">synkron-bot</div>
-                    <div className="text-slate-500 text-xs">2 minutes ago</div>
-                  </div>
-                </div>
-
-                <div className="px-5 py-4">
-                  <div className="rounded-xl border border-white/[0.07] bg-[#0A0A18] p-4">
-                    <p className="text-slate-400 text-xs font-mono leading-relaxed space-y-1.5">
-                      <span className="block">
-                        <span className="text-teal-400">##</span> Token lifetimes
-                      </span>
-                      <span className="block">
-                        Access tokens now expire after{" "}
-                        <span className="text-teal-300">15 minutes</span> instead of 24 hours.
-                      </span>
-                      <span className="block">
-                        A new <span className="text-teal-300">refresh token</span> is issued at
-                        login, valid for 7 days.
-                      </span>
-                      <span className="block text-slate-600 mt-2">
-                        — Synkron updated 2 sections referencing JWT expiry.
-                      </span>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="px-5 pb-5 flex flex-wrap gap-2">
-                  <button className="flex-1 sm:flex-none rounded-lg bg-teal-400/15 border border-teal-400/30 text-teal-300 text-xs sm:text-sm font-medium px-4 py-2 sm:py-1.5 hover:bg-teal-400/25 transition-colors whitespace-nowrap">
-                    Approve
-                  </button>
-                  <button className="flex-1 sm:flex-none rounded-lg border border-white/10 text-slate-400 text-xs sm:text-sm px-4 py-2 sm:py-1.5 hover:bg-white/5 transition-colors whitespace-nowrap">
-                    Request changes
-                  </button>
-                </div>
-              </div>
-            </div>
+      <motion.div
+        {...reveal}
+        ref={ref}
+        className="mt-12 overflow-hidden rounded-xl border border-white/[0.08] bg-[#08080F]"
+      >
+        {/* PR header */}
+        <div className="border-b border-white/[0.07] px-5 py-4 sm:px-6">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h3 className="text-base font-semibold text-white sm:text-lg">
+              docs: update token lifetimes in auth.md{" "}
+              <span className="font-normal text-slate-500">#128</span>
+            </h3>
           </div>
-        </motion.div>
+          <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] text-slate-400">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-400/15 px-2.5 py-1 text-xs font-medium text-teal-300">
+              <GitPullRequest className="h-3.5 w-3.5" />
+              Open
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-teal-400/15">
+                <Bot className="h-3 w-3 text-teal-300" />
+              </span>
+              <span className="font-medium text-slate-200">synkron-docs[bot]</span>
+            </span>
+            <span>
+              wants to merge 1 commit from{" "}
+              <code className="rounded bg-indigo-400/10 px-1.5 py-0.5 font-mono text-xs text-indigo-300">
+                synkron/docs-a3f9c21e
+              </code>
+            </span>
+          </div>
+        </div>
 
-        <Stats />
-      </div>
-    </section>
+        <div className="grid lg:grid-cols-2">
+          <div className="min-w-0 border-b border-white/[0.07] lg:border-b-0 lg:border-r">
+            <FileHeader icon={FileCode2} path="auth/middleware.py" stat="+5 −2" tag="your commit" />
+            <Diff lines={codeDiff} start={12} play={inView} />
+          </div>
+          <div className="min-w-0">
+            <FileHeader icon={FileText} path="docs/auth.md" stat="+5 −1" tag="synkron" />
+            <Diff lines={docDiff} start={41} play={inView} />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.07] bg-white/[0.015] px-5 py-3 sm:px-6">
+          <p className="font-mono text-[11px] text-slate-500">
+            2 sections changed · 0 files rewritten · README.md checked, still accurate
+          </p>
+          <div className="flex gap-2">
+            <span className="rounded-md border border-white/10 px-3 py-1.5 text-xs text-slate-400">
+              Request changes
+            </span>
+            <span className="rounded-md bg-teal-400 px-3 py-1.5 text-xs font-semibold text-[#04040A]">
+              Approve
+            </span>
+          </div>
+        </div>
+      </motion.div>
+    </Section>
   );
 }
