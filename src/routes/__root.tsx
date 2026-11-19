@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { FAQS } from "@/lib/faqs";
 
 /**
  * Renders a 404 Not Found page when a route doesn't exist.
@@ -106,7 +107,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Stop writing documentation manually. Synkron keeps your docs in sync with your code automatically.",
       },
-      { name: "theme-color", content: "#14B8A6" },
+      { name: "theme-color", content: "#04040A" },
       {
         name: "robots",
         content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
@@ -192,48 +193,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "FAQPage",
-              mainEntity: [
-                {
-                  "@type": "Question",
-                  name: "Will Synkron change my main branch?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "No. Synkron always opens pull requests against a staging or documentation branch. You maintain complete control and review every update before it gets merged, just like any normal pull request.",
-                  },
-                },
-                {
-                  "@type": "Question",
-                  name: "What happens if I don't want a pull request?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Simple: just close it. Pull requests from Synkron are suggestions, not mandatory updates. You can also leave review comments and Synkron learns from your feedback to make better suggestions next time.",
-                  },
-                },
-                {
-                  "@type": "Question",
-                  name: "Is my code private and secure?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Yes. Synkron uses Firebase for authentication and GitHub App installation tokens with minimal permissions: metadata: read, contents: write, and pull_requests: write. Your code stays in your repository and is never stored externally.",
-                  },
-                },
-                {
-                  "@type": "Question",
-                  name: "What documentation formats work?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Markdown, MDX, and plain text files in your repository are supported out of the box. Support for Confluence and Notion integration is coming soon. You can vote for additional formats in our GitHub discussions.",
-                  },
-                },
-                {
-                  "@type": "Question",
-                  name: "Will this slow down my build process?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "No. Synkron works asynchronously in the background via webhooks. Your builds finish before Synkron even starts analyzing changes. Pull requests typically appear within 45 to 90 seconds of you pushing code.",
-                  },
-                },
-              ],
+              mainEntity: FAQS.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
             }),
           }}
         />

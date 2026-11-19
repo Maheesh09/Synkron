@@ -1,143 +1,85 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
+import { Section, SectionHeader } from "./Section";
+import { reveal } from "@/lib/motion";
+import { REPO_URL } from "@/lib/site";
+import { FAQS } from "@/lib/faqs";
 
-const FAQS = [
-  {
-    q: "Will Synkron change my main branch?",
-    a: "No. Synkron always opens pull requests against a staging or documentation branch. You maintain complete control and review every update before it gets merged, just like any normal pull request.",
-  },
-  {
-    q: "What happens if I don't want a pull request?",
-    a: "Simple: just close it. Pull requests from Synkron are suggestions, not mandatory updates. You can also leave review comments and Synkron learns from your feedback to make better suggestions next time.",
-  },
-  {
-    q: "Is my code private and secure?",
-    a: "Yes. Synkron uses Firebase for authentication and GitHub App installation tokens with minimal permissions: metadata: read, contents: write, and pull_requests: write. Your code stays in your repository and is never stored externally.",
-  },
-  {
-    q: "What documentation formats work?",
-    a: "Markdown, MDX, and plain text files in your repository are supported out of the box. Support for Confluence and Notion integration is coming soon. You can vote for additional formats in our GitHub discussions.",
-  },
-  {
-    q: "Will this slow down my build process?",
-    a: "No. Synkron works asynchronously in the background via webhooks. Your builds finish before Synkron even starts analyzing changes. Pull requests typically appear within 45 to 90 seconds of you pushing code.",
-  },
-];
-
-function FAQItem({ q, a, delay }: { q: string; a: string; delay: number }) {
+function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
+  const id = useId();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
-      className="border-b border-white/[0.07] last:border-0"
-    >
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full text-left flex items-center justify-between gap-6 py-5 group"
-        aria-expanded={open}
-      >
-        <span className="text-[#F1F5F9] font-semibold text-base leading-snug group-hover:text-teal-400 transition-colors duration-200">
-          {q}
-        </span>
-        <span
-          className={[
-            "w-7 h-7 rounded-full border border-white/[0.12] bg-white/[0.04] flex items-center justify-center shrink-0 transition-all duration-300",
-            open ? "rotate-45 border-teal-400/40 bg-teal-400/10" : "rotate-0 group-hover:border-teal-400/30",
-          ].join(" ")}
+    <div className="border-b border-white/[0.07] last:border-0">
+      <h3>
+        <button
+          onClick={() => setOpen((o) => !o)}
+          className="group flex w-full items-center justify-between gap-6 py-5 text-left"
+          aria-expanded={open}
+          aria-controls={id}
         >
-          <Plus className={`w-3.5 h-3.5 transition-colors duration-300 ${open ? "text-teal-400" : "text-slate-400"}`} strokeWidth={2.5} />
-        </span>
-      </button>
-
+          <span className="text-[15px] font-medium leading-snug text-slate-100 transition-colors group-hover:text-white sm:text-base">
+            {q}
+          </span>
+          <Plus
+            className={`h-4 w-4 shrink-0 text-slate-500 transition-transform duration-300 ${
+              open ? "rotate-45 text-teal-400" : ""
+            }`}
+            strokeWidth={2}
+          />
+        </button>
+      </h3>
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
+            id={id}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <p className="text-slate-400 text-[15px] leading-relaxed pb-5 pr-12">
-              {a}
-            </p>
+            <p className="max-w-2xl pb-5 pr-8 text-[15px] leading-relaxed text-slate-400">{a}</p>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }
 
 export function FAQ() {
   return (
-    <section className="py-16 md:py-[120px] px-6 relative" id="faq">
-      {/* Ambient background */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 500px 350px at 70% 50%, rgba(45,212,191,0.025) 0%, transparent 100%)",
-        }}
-      />
-
-      <div className="max-w-3xl mx-auto relative">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-12"
-        >
-          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest mb-3">
-            FAQ
-          </p>
-          <h2
-            className="font-display font-bold text-white"
-            style={{
-              fontSize: "clamp(30px, 4vw, 46px)",
-              lineHeight: 1.1,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            Common questions answered.
-          </h2>
-          <p className="text-slate-400 mt-4 text-lg leading-relaxed">
-            Everything you should know before setting up Synkron for your repository.
-          </p>
-        </motion.div>
-
-        {/* Accordion */}
-        <div className="rounded-2xl border border-white/[0.07] bg-[#0D0D1C] px-8">
-          {FAQS.map((faq, i) => (
-            <FAQItem key={i} q={faq.q} a={faq.a} delay={i * 0.06} />
-          ))}
+    <Section id="faq" className="border-t border-white/[0.06] py-20 sm:py-28">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 [&>*]:min-w-0">
+        <div className="lg:col-span-4">
+          <SectionHeader
+            index="07"
+            label="FAQ"
+            title="Questions teams ask before installing."
+            stacked
+          />
+          <motion.p {...reveal} className="mt-5 text-sm text-slate-500">
+            Something else?{" "}
+            <a
+              href={`${REPO_URL}/issues`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-300 underline decoration-white/20 underline-offset-2 hover:text-teal-300"
+            >
+              Ask on GitHub
+            </a>
+          </motion.p>
         </div>
-
-        {/* Footer nudge */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-          className="text-center text-slate-500 text-sm mt-8"
+        <motion.div
+          {...reveal}
+          className="border-t border-white/[0.07] lg:col-span-8 lg:border-t-0"
         >
-          Still have a question?{" "}
-          <a
-            href="https://github.com/Maheesh09/Synkron"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-teal-400 hover:underline"
-          >
-            Open a discussion on GitHub →
-          </a>
-        </motion.p>
+          {FAQS.map((f) => (
+            <FAQItem key={f.q} q={f.q} a={f.a} />
+          ))}
+        </motion.div>
       </div>
-    </section>
+    </Section>
   );
 }

@@ -3,22 +3,23 @@ import { useEffect, useState } from "react";
 import { LenisProvider } from "@/components/synkron/LenisProvider";
 import { Navbar } from "@/components/synkron/Navbar";
 import { Hero } from "@/components/synkron/Hero";
-import { ValueProps } from "@/components/synkron/ValueProps";
+import { Metrics } from "@/components/synkron/Metrics";
 import { HowItWorks } from "@/components/synkron/HowItWorks";
 import { AgentPipeline } from "@/components/synkron/AgentPipeline";
 import { LiveMockup } from "@/components/synkron/LiveMockup";
 import { DashboardPreview } from "@/components/synkron/DashboardPreview";
-import { BentoFeatures } from "@/components/synkron/BentoFeatures";
+import { Features } from "@/components/synkron/Features";
+import { Security } from "@/components/synkron/Security";
+import { FAQ } from "@/components/synkron/FAQ";
 import { FinalCTA } from "@/components/synkron/FinalCTA";
 import { Footer } from "@/components/synkron/Footer";
-import { FAQ } from "@/components/synkron/FAQ";
 
 export const Route = createFileRoute("/")({ component: Index });
 
 function Index() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -26,16 +27,23 @@ function Index() {
 
   return (
     <LenisProvider>
-      <div className="bg-[#04040A] text-[#F1F5F9] min-h-screen noise">
+      <div className="noise min-h-screen bg-[#04040A] text-[#F1F5F9]">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-teal-400 focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-[#04040A]"
+        >
+          Skip to content
+        </a>
         <Navbar scrolled={scrolled} />
-        <main>
+        <main id="main">
           <Hero />
-          <ValueProps />
+          <Metrics />
           <HowItWorks />
           <AgentPipeline />
           <LiveMockup />
           <DashboardPreview />
-          <BentoFeatures />
+          <Features />
+          <Security />
           <FAQ />
           <FinalCTA />
         </main>

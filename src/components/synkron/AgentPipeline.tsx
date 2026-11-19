@@ -1,170 +1,170 @@
 import { motion } from "framer-motion";
 import { Binary, Network, PenTool, GitMerge } from "lucide-react";
-import { useMouseTilt } from "@/hooks/useMouseTilt";
+import { Section, SectionHeader } from "./Section";
+import { reveal } from "@/lib/motion";
 
+/** p50 and share of time come from the per-agent breakdown in docs/SYNKRON_METRICS.md. */
 const agents = [
   {
-    n: "01",
     Icon: Binary,
     name: "Code Analyzer",
-    role: "semantic analysis",
-    desc: "Reads through the git diff and understands what the change means, not just what lines changed, but what the code now does.",
-    tools: [],
+    reads: "Git diff of the push",
+    does: "Ranks changed files by how likely they are to change documented behaviour, then summarises what the code now does. Pure noise is rejected here, before any model call.",
+    emits: "Change summary",
+    p50: "1.8s",
+    share: 10.7,
+    color: "#5eead4",
   },
   {
-    n: "02",
     Icon: Network,
     name: "Impact Mapper",
-    role: "dependency mapping",
-    desc: "Looks at your entire documentation structure and ranks each file by relevance. Only documentation that actually needs updating gets touched.",
-    tools: [],
+    reads: "Change summary, docs tree",
+    does: "Scores every documentation file for relevance to the change. Only files above the threshold move on.",
+    emits: "Ranked doc list",
+    p50: "2.2s",
+    share: 7.2,
+    color: "#2dd4bf",
   },
   {
-    n: "03",
     Icon: PenTool,
     name: "Doc Writer",
-    role: "content generation",
-    desc: "Updates only the affected sections of documentation, never rewrites entire files. Improves suggestions over time based on your team's edits.",
-    tools: [],
+    reads: "Affected docs, your past edits",
+    does: "Rewrites only the sections that are now wrong, using correction patterns learned from how your team edited earlier PRs.",
+    emits: "Section patches",
+    p50: "18.7s",
+    share: 55.6,
+    color: "#818cf8",
   },
   {
-    n: "04",
     Icon: GitMerge,
     name: "PR Creator",
-    role: "git automation",
-    desc: "Creates a branch, commits the changes, and opens a pull request with a complete explanation for the reviewer.",
-    tools: [],
+    reads: "Section patches",
+    does: "Writes one atomic commit through the Git Data API on a dedicated branch and opens or updates a single pull request.",
+    emits: "Pull request",
+    p50: "8.5s",
+    share: 26.5,
+    color: "#a5b4fc",
   },
 ];
 
-const labels = ["Analyze", "Map", "Write", "Ship"];
-
-function AgentCard({ a, i }: { a: (typeof agents)[number]; i: number }) {
-  const { ref, tilt, onMouseMove, onMouseLeave } = useMouseTilt(8);
+function TimeShare() {
   return (
-    <motion.div
-      ref={ref}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      style={{ perspective: 1200 }}
-    >
-      <motion.div
-        animate={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY }}
-        transition={{ type: "spring", stiffness: 200, damping: 20 }}
-        whileHover={{
-          boxShadow:
-            "0 24px 64px rgba(45,212,191,0.1), inset 0 1px 0 rgba(255,255,255,0.08)",
-          borderColor: "rgba(45,212,191,0.3)",
-        }}
-        style={{
-          transformStyle: "preserve-3d",
-          background: "rgba(13,13,28,0.85)",
-        }}
-        className="group rounded-3xl border border-white/[0.08] backdrop-blur-sm p-8 h-full transition-colors"
-      >
-        {/* Agent number */}
-        <div className="font-mono text-xs text-teal-400/50">{a.n}</div>
-
-        {/* Icon with 3D lift */}
-        <div
-          style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}
-          className="mt-3 w-11 h-11 rounded-xl bg-teal-400/10 group-hover:bg-teal-400/20 transition-colors flex items-center justify-center"
-        >
-          <a.Icon className="w-5 h-5 text-teal-400" strokeWidth={1.5} />
-        </div>
-
-        <h3 className="font-display font-semibold text-white text-xl mt-4 leading-tight">
-          {a.name}
-        </h3>
-        <p className="font-mono text-xs text-indigo-400 mt-1">{a.role}</p>
-        <p className="text-slate-400 text-sm leading-relaxed mt-3">{a.desc}</p>
-
-        <div className="flex flex-wrap gap-1.5 mt-5">
-          {a.tools.map((t) => (
-            <span
-              key={t}
-              className="font-mono text-[10px] text-indigo-300 bg-indigo-400/10 border border-indigo-400/20 rounded px-2 py-0.5"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-      </motion.div>
+    <motion.div {...reveal} className="mt-10">
+      <div className="flex items-baseline justify-between gap-4">
+        <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-slate-500">
+          Where pipeline time goes
+        </p>
+        <p className="font-mono text-[11px] text-slate-600">median 31.5s end to end</p>
+      </div>
+      <div className="mt-3 flex h-2.5 overflow-hidden rounded-full bg-white/[0.04]">
+        {agents.map((a, i) => (
+          <motion.span
+            key={a.name}
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+            style={{ width: `${a.share}%`, background: a.color, transformOrigin: "left" }}
+            className="h-full border-r border-[#04040A] last:border-r-0"
+            title={`${a.name}: ${a.share}%`}
+          />
+        ))}
+      </div>
+      <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5">
+        {agents.map((a) => (
+          <li key={a.name} className="flex items-center gap-2 text-xs text-slate-400">
+            <span className="h-2 w-2 rounded-sm" style={{ background: a.color }} />
+            {a.name}
+            <span className="font-mono tabular-nums text-slate-600">{a.share}%</span>
+          </li>
+        ))}
+      </ul>
     </motion.div>
   );
 }
 
 export function AgentPipeline() {
   return (
-    <section
-      id="agents"
-      className="py-16 md:py-[140px] px-6 relative"
-      style={{
-        background:
-          "radial-gradient(ellipse 900px 600px at 50% 50%, rgba(45,212,191,0.04) 0%, transparent 100%)",
-      }}
-    >
-      <div className="max-w-7xl mx-auto">
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <p className="font-mono text-teal-400 text-sm uppercase tracking-widest">
-            The pipeline
-          </p>
-          <h2
-            className="font-display font-extrabold text-white mt-3"
-            style={{
-              fontSize: "clamp(40px, 5.5vw, 64px)",
-              lineHeight: 1.05,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            Four agents.
-            <br />
-            <span className="text-gradient">One mission.</span>
-          </h2>
-        </motion.div>
+    <Section id="pipeline" className="border-t border-white/[0.06] py-20 sm:py-28">
+      <SectionHeader
+        index="02"
+        label="Pipeline"
+        title="Four agents, each with one job."
+        description="Every stage has a typed input and output, its own timing, and its own reason for stopping. When a run is skipped, the dashboard tells you which agent stopped it and why."
+      />
 
-        {/* Pipeline connector */}
-        <div className="mt-10 flex flex-wrap items-center gap-x-2 sm:gap-x-5 gap-y-4">
-          {labels.map((l, i) => (
-            <div key={l} className="flex items-center gap-2 sm:gap-5">
-              <div className="flex flex-col items-center">
-                <div className="relative">
-                  <div className="w-3 h-3 rounded-full bg-teal-400 shadow-[0_0_8px_rgba(45,212,191,0.6)]" />
-                  <div
-                    className="absolute inset-0 rounded-full border border-teal-400 ripple-ring"
-                    style={{ animationDelay: `${i * 0.4}s` }}
-                  />
-                </div>
-                <span className="font-mono text-[10px] sm:text-xs text-slate-500 mt-2.5">
-                  {l}
+      {/* Desktop: spec table */}
+      <motion.div
+        {...reveal}
+        className="mt-12 hidden overflow-hidden rounded-xl border border-white/[0.07] md:block"
+      >
+        <table className="w-full text-left text-sm">
+          <thead className="bg-white/[0.02] font-mono text-[11px] uppercase tracking-[0.1em] text-slate-500">
+            <tr>
+              <th className="w-[26%] px-5 py-3 font-normal">Agent</th>
+              <th className="px-5 py-3 font-normal">What it does</th>
+              <th className="w-[16%] px-5 py-3 font-normal">Emits</th>
+              <th className="w-[10%] px-5 py-3 text-right font-normal">p50</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/[0.06]">
+            {agents.map((a, i) => (
+              <tr key={a.name} className="align-top transition-colors hover:bg-white/[0.015]">
+                <td className="px-5 py-5">
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.03]">
+                      <a.Icon className="h-4 w-4 text-teal-400" strokeWidth={1.75} />
+                    </span>
+                    <div>
+                      <p className="font-medium text-white">
+                        <span className="mr-2 font-mono text-xs text-slate-600">0{i + 1}</span>
+                        {a.name}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">Reads: {a.reads}</p>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-5 py-5 leading-relaxed text-slate-400">{a.does}</td>
+                <td className="px-5 py-5">
+                  <span className="inline-flex rounded border border-indigo-400/20 bg-indigo-400/[0.08] px-2 py-0.5 font-mono text-[11px] text-indigo-300">
+                    {a.emits}
+                  </span>
+                </td>
+                <td className="px-5 py-5 text-right font-mono text-[13px] tabular-nums text-slate-300">
+                  {a.p50}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </motion.div>
+
+      {/* Mobile: stacked rows */}
+      <ol className="mt-10 divide-y divide-white/[0.06] overflow-hidden rounded-xl border border-white/[0.07] md:hidden">
+        {agents.map((a, i) => (
+          <li key={a.name} className="p-5">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.03]">
+                  <a.Icon className="h-4 w-4 text-teal-400" strokeWidth={1.75} />
                 </span>
+                <p className="font-medium text-white">
+                  <span className="mr-1.5 font-mono text-xs text-slate-600">0{i + 1}</span>
+                  {a.name}
+                </p>
               </div>
-              {i < labels.length - 1 && (
-                <div className="relative w-6 sm:w-16 h-px bg-teal-400/20 mb-5">
-                  <div className="absolute inset-0 bg-gradient-to-r from-teal-400/40 to-transparent" />
-                </div>
-              )}
+              <span className="font-mono text-xs tabular-nums text-slate-400">{a.p50}</span>
             </div>
-          ))}
-        </div>
+            <p className="mt-3 text-sm leading-relaxed text-slate-400">{a.does}</p>
+            <p className="mt-3 font-mono text-[11px] text-slate-500">
+              {a.reads} <span className="text-slate-700">→</span>{" "}
+              <span className="text-indigo-300">{a.emits}</span>
+            </p>
+          </li>
+        ))}
+      </ol>
 
-        {/* Cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-12">
-          {agents.map((a, i) => (
-            <AgentCard key={a.n} a={a} i={i} />
-          ))}
-        </div>
-      </div>
-    </section>
+      <TimeShare />
+    </Section>
   );
 }
